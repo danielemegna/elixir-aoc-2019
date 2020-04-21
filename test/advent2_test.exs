@@ -1,12 +1,7 @@
 defmodule Advent2Test do
   use ExUnit.Case
 
-  test "compute_four test" do
-    assert Advent2.compute_four([1,0,0,0]) == [2,0,0,0] # (1 + 1 = 2)
-    assert Advent2.compute_four([2,3,0,3]) == [2,3,0,6] # (3 * 2 = 6)
-  end
-
-  test "resolve test" do
+  test "resolve function test" do
     assert Advent2.resolve([1,0,0,0,99]) == [2,0,0,0,99] # (1 + 1 = 2)
     assert Advent2.resolve([2,3,0,3,99]) == [2,3,0,6,99] # (3 * 2 = 6)
     assert Advent2.resolve([2,4,4,5,99,0]) == [2,4,4,5,99,9801] # 99 * 99 = 9801

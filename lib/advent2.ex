@@ -10,23 +10,20 @@ defmodule Advent2 do
     if(Enum.at(vector, index) == 99) do
       vector
     else
-      four = Enum.slice(vector, index, 4)
-      vector = compute_four(four, vector)
+      slice = Enum.slice(vector, index, 4)
+      vector = compute_slice(slice, vector)
       resolve(vector, index + 4)
     end
   end
 
-  def compute_four(full_vector), do: compute_four(full_vector, full_vector)
-  def compute_four([operation, first_position, second_position, result_position], full_vector) do
-    operation_result = perform_operation(
-      operation,
-      Enum.at(full_vector, first_position),
-      Enum.at(full_vector, second_position)
-    )
-    full_vector |> List.replace_at(result_position, operation_result)
+  defp compute_slice([operation, first_position, second_position, result_position], full_vector) do
+    first = Enum.at(full_vector, first_position)
+    second = Enum.at(full_vector, second_position)
+    operation_result = case(operation) do
+      1 -> first + second
+      2 -> first * second
+    end
+    List.replace_at(full_vector, result_position, operation_result)
   end
-
-  defp perform_operation(1, first, second), do: first + second
-  defp perform_operation(2, first, second), do: first * second
 
 end
