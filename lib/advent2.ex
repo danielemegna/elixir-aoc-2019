@@ -6,13 +6,14 @@ defmodule Advent2 do
       |> resolve
   end
 
-  def resolve(vector) do
-    vector
-      |> Enum.slice(0, Enum.find_index(vector, &(&1 == 99)))
-      |> Enum.chunk_every(4)
-      |> Enum.reduce(vector, fn(chunk, acc) ->
-        compute_four(chunk, acc)
-      end)
+  def resolve(vector, index \\ 0) do
+    if(Enum.at(vector, index) == 99) do
+      vector
+    else
+      four = Enum.slice(vector, index, 4)
+      vector = compute_four(four, vector)
+      resolve(vector, index + 4)
+    end
   end
 
   def compute_four(full_vector), do: compute_four(full_vector, full_vector)
