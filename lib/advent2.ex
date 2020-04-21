@@ -2,7 +2,12 @@ defmodule Advent2 do
 
   def resolve do
     File.stream!("advent2.txt")
+      |> Enum.at(0)
+      |> String.split(",")
       |> Enum.map(&Integer.parse/1)
+      |> Enum.map(fn({n, _}) -> n end)
+      |> List.replace_at(1, 12)
+      |> List.replace_at(2, 2)
       |> resolve
   end
 
