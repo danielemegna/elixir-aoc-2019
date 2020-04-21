@@ -1,21 +1,25 @@
-# Advent
+# Elixir Advent of Code 2019
 
-**TODO: Add description**
+Solutions for https://adventofcode.com/2019 in elixir-lang (https://elixir-lang.org/)
 
-## Installation
+## Run
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `advent` to your list of dependencies in `mix.exs`:
-
-```elixir
-def deps do
-  [
-    {:advent, "~> 0.1.0"}
-  ]
-end
+Get dependencies and run tests with
+```
+$ mix deps.get
+$ mix test
 ```
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/advent](https://hexdocs.pm/advent).
+Challenge solutions are in tests as assertions:
 
+```elixir
+defmodule Advent1Test do
+  use ExUnit.Case
+
+  test "resolve level" do
+    assert Advent1.resolve == 3262358
+  end
+
+end
+
+```
