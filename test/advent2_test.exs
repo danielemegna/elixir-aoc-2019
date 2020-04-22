@@ -11,7 +11,12 @@ defmodule Advent2Test do
 
   test "resolve level (first part)" do
     result = Advent2.resolve_first_part
-    assert Enum.at(result, 0) == 2894520
+    assert result == 2894520
+  end
+
+  test "resolve level (second part)" do
+    result = Advent2.resolve_second_part
+    assert result == 9342
   end
 
 end

@@ -1,9 +1,26 @@
 defmodule Advent2 do
 
-  def resolve_first_part do
+  def resolve_second_part do
+    inputs = 0..99 |> Stream.flat_map(fn(noun) ->
+      0..99 |> Stream.map(fn(verb) ->
+        program_result = resolve_first_part(noun, verb)
+        {noun, verb, program_result}
+      end)
+    end)
+
+    {noun, verb, _program_result} = inputs
+      |> Enum.find(fn({_noun, _verb, program_result}) ->
+        program_result == 19690720
+      end)
+
+    (100 * noun) + verb
+  end
+
+  def resolve_first_part(noun \\ 12, verb \\ 2) do
     read_initial_memory_from_file()
-      |> put_inputs_in_memory(12, 2)
+      |> put_inputs_in_memory(noun, verb)
       |> run_memory_program()
+      |> Enum.at(0)
   end
 
   def run_memory_program(memory, instruction_pointer \\ 0) do
