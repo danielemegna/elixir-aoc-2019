@@ -1,37 +1,44 @@
 defmodule Advent2 do
 
+  def resolve_first_part do
+    read_initial_memory_from_file()
+      |> run_memory_program_with_input(12, 2)
+  end
+
   def resolve_second_part do
-    inputs = 0..99 |> Stream.flat_map(fn(noun) ->
-      0..99 |> Stream.map(fn(verb) ->
-        program_result = resolve_first_part(noun, verb)
-        {noun, verb, program_result}
+    initial_memory = read_initial_memory_from_file()
+
+    all_input_pairs = 99..0 |> Stream.flat_map(fn(noun) ->
+      99..0 |> Stream.map(fn(verb) ->
+        {noun, verb}
       end)
     end)
 
-    {noun, verb, _program_result} = inputs
-      |> Enum.find(fn({_noun, _verb, program_result}) ->
-        program_result == 19690720
-      end)
-
-    (100 * noun) + verb
+    {result_noun, result_verb} = Enum.find(all_input_pairs, fn({noun, verb}) ->
+      initial_memory
+        |> run_memory_program_with_input(noun, verb)
+        |> Kernel.==(19690720)
+    end)
+    
+    (100 * result_noun) + result_verb
   end
 
-  def resolve_first_part(noun \\ 12, verb \\ 2) do
-    read_initial_memory_from_file()
-      |> put_inputs_in_memory(noun, verb)
-      |> run_memory_program()
-      |> Enum.at(0)
-  end
-
-  def run_memory_program(memory, instruction_pointer \\ 0) do
+  def run_memory_program_from_instruction(memory, instruction_pointer) do
     instruction = Enum.slice(memory, instruction_pointer, 4)
     if(halt_program_instruction?(instruction)) do
       memory
     else
       memory
         |> compute_instruction(instruction)
-        |> run_memory_program(instruction_pointer + 4)
+        |> run_memory_program_from_instruction(instruction_pointer + 4)
     end
+  end
+
+  defp run_memory_program_with_input(memory, noun, verb) do
+    memory
+      |> put_inputs_in_memory(noun, verb)
+      |> run_memory_program_from_instruction(0)
+      |> Enum.at(0)
   end
 
   defp read_initial_memory_from_file do
