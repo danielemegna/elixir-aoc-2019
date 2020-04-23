@@ -12,4 +12,14 @@ defmodule Advent1Test do
     assert Advent1.resolve_first_part == 3262358
   end
 
+  test "calculate_fuel_including_additional_for function test" do
+    assert Advent1.calculate_fuel_including_additional_for(14) == 2
+    assert Advent1.calculate_fuel_including_additional_for(1969) == 966
+    assert Advent1.calculate_fuel_including_additional_for(100756) == 50346
+  end
+
+  test "resolve level (second part)" do
+    assert Advent1.resolve_second_part == 4890696
+  end
+
 end
