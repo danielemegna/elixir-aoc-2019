@@ -6,15 +6,13 @@ defmodule Advent3 do
   end
 
   def find_closest_cross_manhattan_distance(first_wire_movements, second_wire_movements) do
-    central_port_coordinates = {1946, 1946}
-    inital_grid = %{
-      central_port_coordinates => :central_port
-    }
-    
-    first_grid = fill_grid_with(first_wire_movements, inital_grid, central_port_coordinates)
-    second_grid = fill_grid_with(second_wire_movements, inital_grid, central_port_coordinates)
+    first_grid = fill_grid_with(first_wire_movements, %{}, {0,0})
+    second_grid = fill_grid_with(second_wire_movements, %{}, {0,0})
 
-    159
+    MapSet.intersection(MapSet.new(first_grid), MapSet.new(second_grid))
+      |> Enum.map(fn {{x, y}, :busy} -> abs(x) + abs(y) end)
+      |> Enum.sort
+      |> Enum.at(0)
   end
 
   defp read_wire_movements_from_file do
@@ -56,7 +54,7 @@ defmodule Advent3 do
     for i <- 1..steps, into: grid do
       case(direction) do
         :right -> {{ from_x + i, from_y }, :busy}
-        :left -> {{ from_x + i, from_y }, :busy}
+        :left -> {{ from_x - i, from_y }, :busy}
         :up -> {{ from_x, from_y + i }, :busy}
         :down -> {{ from_x, from_y - i }, :busy}
       end
