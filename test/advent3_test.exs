@@ -1,40 +1,11 @@
 defmodule Advent3Test do
   use ExUnit.Case
 
-  test "fill_grid_with single right step" do
-    from_coordinates = {1946, 1946}
+  test "fill_grid_with some steps" do
+    from_coordinate = {1946, 1946}
     inital_grid = MapSet.new
 
-    filled_grid = Advent3.fill_grid_with(inital_grid, from_coordinates, 2, :right)
-
-    expected = MapSet.new([
-      {1946 + 1, 1946},
-      {1946 + 2, 1946}
-    ])
-
-    assert filled_grid == expected
-  end
-
-  test "fill_grid_with single down step" do
-    from_coordinates = {1946, 1946}
-    inital_grid = MapSet.new
-
-    filled_grid = Advent3.fill_grid_with(inital_grid, from_coordinates, 3, :down)
-
-    expected = MapSet.new([
-      {1946, 1946 - 1},
-      {1946, 1946 - 2},
-      {1946, 1946 - 3}
-    ])
-
-    assert filled_grid == expected
-  end
-
-  test "fill_grid_with multiple steps" do
-    central_port_coordinates = {1946, 1946}
-    inital_grid = MapSet.new
-
-    filled_grid = Advent3.fill_grid_with(inital_grid, ["R3","D5","R2"], central_port_coordinates)
+    filled_grid = Advent3.fill_grid_with(inital_grid, ["R3","D5","R2"], from_coordinate)
 
     expected = MapSet.new([
       {1946 + 1, 1946},
