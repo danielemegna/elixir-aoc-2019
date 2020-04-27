@@ -37,8 +37,8 @@ defmodule Advent3Test do
     assert 135 == Advent3.find_closest_cross_manhattan_distance(first_wire_movements, second_wire_movements)
   end
 
-  test "resolve level" do
-    assert 896 == Advent3.resolve
+  test "resolve level (first part)" do
+    assert 896 == Advent3.resolve_first_part
   end
 
 end

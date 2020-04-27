@@ -1,6 +1,6 @@
 defmodule Advent3 do
 
-  def resolve do
+  def resolve_first_part do
     [first_wire_movements, second_wire_movements] = read_wire_movements_from_file()
     find_closest_cross_manhattan_distance(first_wire_movements, second_wire_movements)
   end
