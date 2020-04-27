@@ -43,4 +43,22 @@ defmodule Advent3Test do
     assert 896 == Advent3.resolve_first_part
   end
 
+  test "find_fewest_combined_steps_to_cross test (provided example 1)" do
+    first_wire_movements = ["R75","D30","R83","U83","L12","D49","R71","U7","L72"]
+    second_wire_movements = ["U62","R66","U55","R34","D71","R55","D58","R83"]
+
+    assert 610 == Advent3.find_fewest_combined_steps_to_cross(first_wire_movements, second_wire_movements)
+  end
+
+  test "find_fewest_combined_steps_to_cross test (provided example 2)" do
+    first_wire_movements = ["R98","U47","R26","D63","R33","U87","L62","D20","R33","U53","R51"]
+    second_wire_movements = ["U98","R91","D20","R16","D67","R40","U7","R15","U6","R7"]
+
+    assert 410 == Advent3.find_fewest_combined_steps_to_cross(first_wire_movements, second_wire_movements)
+  end
+
+  test "resolve level (second part)" do
+    assert 16524 == Advent3.resolve_second_part
+  end
+
 end
