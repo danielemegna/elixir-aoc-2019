@@ -15,26 +15,26 @@ defmodule Advent3 do
       |> Enum.at(0)
   end
 
-  def fill_grid_with(grid, [movement | rest], {current_x, current_y}) do
+  def fill_grid_with(grid, [movement | rest], current_coordinate) do
     {direction, steps_number} = String.split_at(movement, 1)
     {steps_number, _} = Integer.parse(steps_number)
 
-    increase_coordinate = case(direction) do
-      "R" -> fn(step_index) -> {current_x + step_index, current_y} end
-      "L" -> fn(step_index) -> {current_x - step_index, current_y} end
-      "U" -> fn(step_index) -> {current_x, current_y + step_index} end
-      "D" -> fn(step_index) -> {current_x, current_y - step_index} end
-    end
+    occupied_coordinates = 1..steps_number |> Enum.map(fn(step_index) ->
+      increase_coordinate(current_coordinate, direction, step_index)
+    end)
 
-    occupied_coordinates = 1..steps_number |> Enum.map(increase_coordinate)
     new_grid = MapSet.union(grid, MapSet.new(occupied_coordinates))
-    new_coordinates = increase_coordinate.(steps_number)
+    new_coordinate = increase_coordinate(current_coordinate, direction, steps_number)
 
-    fill_grid_with(new_grid, rest, new_coordinates)
+    fill_grid_with(new_grid, rest, new_coordinate)
   end
 
   def fill_grid_with(grid, [], _), do: grid
 
+  defp increase_coordinate({x, y}, "R", count), do: {x + count, y}
+  defp increase_coordinate({x, y}, "L", count), do: {x - count, y}
+  defp increase_coordinate({x, y}, "U", count), do: {x, y + count}
+  defp increase_coordinate({x, y}, "D", count), do: {x, y - count}
 
   defp read_wire_movements_from_file do
     File.stream!("advent3.txt")
