@@ -2,25 +2,25 @@ defmodule Advent3Test do
   use ExUnit.Case
 
   test "fill_grid_with some steps" do
-    inital_grid = []
+    inital_grid = %{}
     steps = ["R3","D5","R2"]
     from_coordinate = {1946, 1946}
     current_length = 10
 
     filled_grid = Advent3.fill_grid_with(inital_grid, steps, from_coordinate, current_length)
 
-    expected = [
-      %{coordinate: {1946 + 1, 1946}, wire_length: 11},
-      %{coordinate: {1946 + 2, 1946}, wire_length: 12},
-      %{coordinate: {1946 + 3, 1946}, wire_length: 13},
-      %{coordinate: {1946 + 3, 1946 - 1}, wire_length: 14},
-      %{coordinate: {1946 + 3, 1946 - 2}, wire_length: 15},
-      %{coordinate: {1946 + 3, 1946 - 3}, wire_length: 16},
-      %{coordinate: {1946 + 3, 1946 - 4}, wire_length: 17},
-      %{coordinate: {1946 + 3, 1946 - 5}, wire_length: 18},
-      %{coordinate: {1946 + 4, 1946 - 5}, wire_length: 19},
-      %{coordinate: {1946 + 5, 1946 - 5}, wire_length: 20}
-    ]
+    expected = %{
+      {1946 + 1, 1946} => 11,
+      {1946 + 2, 1946} => 12,
+      {1946 + 3, 1946} => 13,
+      {1946 + 3, 1946 - 1} => 14,
+      {1946 + 3, 1946 - 2} => 15,
+      {1946 + 3, 1946 - 3} => 16,
+      {1946 + 3, 1946 - 4} => 17,
+      {1946 + 3, 1946 - 5} => 18,
+      {1946 + 4, 1946 - 5} => 19,
+      {1946 + 5, 1946 - 5} => 20
+    }
 
     assert filled_grid == expected
   end
