@@ -28,8 +28,11 @@ defmodule Advent3 do
     second_grid = %{} |> fill_grid_with(second_wire_movements, {0,0}, 0)
 
     first_grid
-      |> Enum.filter(fn {k, _} -> Map.has_key?(second_grid, k) end)
-      |> Enum.map(fn {k, v} -> v + Map.get(second_grid, k) end)
+      |> Enum.filter(fn {coordinate, _} -> Map.has_key?(second_grid, coordinate) end)
+      |> Enum.map(fn {coordinate, first_wire_length} ->
+        second_wire_length = Map.get(second_grid, coordinate)
+        first_wire_length + second_wire_length
+      end)
       |> Enum.min
   end
 
@@ -37,10 +40,11 @@ defmodule Advent3 do
     {direction, steps_number} = String.split_at(movement, 1)
     {steps_number, _} = Integer.parse(steps_number)
 
-    new_grid = 1..steps_number |> Enum.reduce(grid, fn step_index, acc ->
-      step_coordinate = increase_coordinate(current_coordinate, direction, step_index)
-      Map.put(acc, step_coordinate, current_wire_length + step_index)
-    end)
+    new_grid = 1..steps_number
+      |> Enum.reduce(grid, fn step_index, acc ->
+        step_coordinate = increase_coordinate(current_coordinate, direction, step_index)
+        Map.put(acc, step_coordinate, current_wire_length + step_index)
+      end)
 
     new_coordinate = increase_coordinate(current_coordinate, direction, steps_number)
 
