@@ -1,7 +1,7 @@
 defmodule Advent4 do
 
   def resolve do
-    197487..673251
+    199999..669999 # 197487..673251
       |> Enum.map(&Integer.to_string/1)
       |> Enum.filter(&meets_criteria?/1)
       |> Enum.count
@@ -15,7 +15,9 @@ defmodule Advent4 do
 
   defp has_two_adjacent_digits?(password_digits) do
     password_digits
-      |> Stream.with_index
+      |> Enum.with_index
+      |> Enum.reverse
+      |> Enum.drop(1)
       |> Enum.any?(fn {digit, index} ->
         digit == Enum.at(password_digits, index+1)
       end)
@@ -23,10 +25,12 @@ defmodule Advent4 do
 
   defp digits_never_decrease?(password_digits) do
     password_digits
-      |> Stream.with_index
+      |> Enum.with_index
+      |> Enum.reverse
+      |> Enum.drop(1)
       |> Enum.all?(fn {digit, index} ->
         next_digit = Enum.at(password_digits, index+1)
-        index == (Enum.count(password_digits)-1) || Integer.parse(digit) <= Integer.parse(next_digit)
+        Integer.parse(digit) <= Integer.parse(next_digit)
       end)
   end
 
