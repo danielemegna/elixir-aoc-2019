@@ -8,26 +8,16 @@ defmodule Advent4 do
 
   def meets_criteria?(password) do
     password_digits = Integer.digits(password)
-    has_two_adjacent_digits?(password_digits) &&
-      digits_never_decrease?(password_digits)
+    digits_never_decrease?(password_digits) &&
+      has_two_adjacent_digits?(password_digits)
   end
 
-  defp has_two_adjacent_digits?([first, second | rest]) do
-    if(first == second) do
-      true
-    else
-      has_two_adjacent_digits?([second | rest])
-    end
-  end
-  defp has_two_adjacent_digits?(_), do: false
+  defp has_two_adjacent_digits?([first, second | _]) when first == second, do: true
+  defp has_two_adjacent_digits?([_ | rest]), do: has_two_adjacent_digits?(rest)
+  defp has_two_adjacent_digits?([]), do: false
 
-  defp digits_never_decrease?([first, second | rest]) do
-    if(first > second) do
-      false
-    else
-      digits_never_decrease?([second | rest])
-    end
-  end
-  defp digits_never_decrease?(_), do: true
+  defp digits_never_decrease?([first, second | _]) when (first > second), do: false
+  defp digits_never_decrease?([_ | rest]), do: digits_never_decrease?(rest)
+  defp digits_never_decrease?([]), do: true
 
 end
