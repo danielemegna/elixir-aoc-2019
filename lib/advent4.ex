@@ -21,7 +21,7 @@ defmodule Advent4 do
   def meets_second_part_criteria?(password) do
     password_digits = Integer.digits(password)
     digits_never_decrease?(password_digits) &&
-      has_two_adjacent_digits_alone?(password_digits, nil)
+      has_two_adjacent_digits_alone?(password_digits)
   end
 
   defp digits_never_decrease?([first, second | _]) when (first > second), do: false
@@ -32,8 +32,9 @@ defmodule Advent4 do
   defp has_two_adjacent_digits?([_ | rest]), do: has_two_adjacent_digits?(rest)
   defp has_two_adjacent_digits?([]), do: false
 
-  defp has_two_adjacent_digits_alone?([first, second | rest], last) do
-    if(first == second && first != last && second != Enum.at(rest, 0)) do
+  defp has_two_adjacent_digits_alone?(digits, previous \\ nil)
+  defp has_two_adjacent_digits_alone?([first, second | rest], previous) do
+    if(first == second && first != previous && second != Enum.at(rest, 0)) do
       true
     else
       has_two_adjacent_digits_alone?([second | rest], first)
