@@ -35,14 +35,21 @@ defmodule Advent5 do
     end
   end
 
-  defp compute_instruction(memory, [opcode, first_parameter_position, second_parameter_position, result_position]) do
-    first_parameter = Enum.at(memory, first_parameter_position)
-    second_parameter = Enum.at(memory, second_parameter_position)
-    instruction_result = case(opcode) do
+  defp compute_instruction(memory, [opcode, first_parameter, second_parameter, third_parameter]) do
+    instruction = Instruction.build_from(opcode)
+    first_parameter = case(instruction.first_parameter_mode) do
+      0 -> Enum.at(memory, first_parameter)
+      1 -> first_parameter
+    end
+    second_parameter = case(instruction.second_parameter_mode) do
+      0 -> Enum.at(memory, second_parameter)
+      1 -> second_parameter
+    end
+    instruction_result = case(instruction.opcode) do
       1 -> first_parameter + second_parameter
       2 -> first_parameter * second_parameter
     end
-    List.replace_at(memory, result_position, instruction_result)
+    List.replace_at(memory, third_parameter, instruction_result)
   end
 
 end

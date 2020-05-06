@@ -9,6 +9,13 @@ defmodule Advent5Test do
     run_program_test([1,1,1,4,99,5,6,0,99], [30,1,1,4,2,5,6,0,99])
   end
 
+  test "introduce immediate parameter mode" do
+    run_program_test([1101,2,3,3,99], [1101,2,3,5,99]) # (2 + 3 = 5)
+    run_program_test([1102,2,3,3,99], [1102,2,3,6,99]) # (2 * 3 = 6)
+    run_program_test([1001,4,1,0,99], [100,4,1,0,99]) # (99 + 1 = 100)
+    run_program_test([101,1,4,0,99], [100,1,4,0,99]) # (1 + 99 = 100)
+  end
+
   @tag :skip
   test "resolve level" do
     result = Advent5.resolve
