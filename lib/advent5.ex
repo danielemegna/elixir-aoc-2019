@@ -6,12 +6,12 @@ defmodule Advent5 do
   end
 
   def run_memory_program_from_instruction(memory, instruction_pointer) do
-    instruction = Enum.slice(memory, instruction_pointer, 4)
+    instruction = Instruction.build_from(Enum.at(memory, instruction_pointer))
     if(halt_program_instruction?(instruction)) do
       memory
     else
       memory
-        |> compute_instruction(instruction)
+        |> compute_instruction(instruction, instruction_pointer)
         |> run_memory_program_from_instruction(instruction_pointer + 4)
     end
   end
@@ -29,22 +29,20 @@ defmodule Advent5 do
   end
 
   defp halt_program_instruction?(instruction) do
-    case(instruction) do
-      [99 | _] -> true
-      _ -> false
-    end
+    instruction.opcode == 99
   end
 
-  defp compute_instruction(memory, [opcode, first_parameter, second_parameter, third_parameter]) do
-    instruction = Instruction.build_from(opcode)
+  defp compute_instruction(memory, instruction, instruction_pointer) do
     first_parameter = case(instruction.first_parameter_mode) do
-      0 -> Enum.at(memory, first_parameter)
-      1 -> first_parameter
+      1 -> Enum.at(memory, instruction_pointer + 1)
+      0 -> Enum.at(memory, Enum.at(memory, instruction_pointer + 1))
     end
     second_parameter = case(instruction.second_parameter_mode) do
-      0 -> Enum.at(memory, second_parameter)
-      1 -> second_parameter
+      1 -> Enum.at(memory, instruction_pointer + 2)
+      0 -> Enum.at(memory, Enum.at(memory, instruction_pointer + 2))
     end
+    third_parameter = Enum.at(memory, instruction_pointer + 3)
+
     instruction_result = case(instruction.opcode) do
       1 -> first_parameter + second_parameter
       2 -> first_parameter * second_parameter
