@@ -1,7 +1,7 @@
 defmodule Advent5Test do
   use ExUnit.Case
 
-  test "run_memory_program_from_instruction function retrocompatibility" do
+  test "retrocompatibility tests" do
     run_program_test([1,0,0,0,99], [2,0,0,0,99]) # (1 + 1 = 2)
     run_program_test([2,3,0,3,99], [2,3,0,6,99]) # (3 * 2 = 6)
     run_program_test([2,4,4,5,99,0], [2,4,4,5,99,9801]) # 99 * 99 = 9801
@@ -18,6 +18,32 @@ defmodule Advent5Test do
   defp run_program_test(initial_memory, expected_final_memory) do
     final_memory = Advent5.run_memory_program_from_instruction(initial_memory, 0)
     assert final_memory == expected_final_memory
+  end
+
+end
+
+defmodule InstructionTest do
+  use ExUnit.Case
+
+  test "build Instruction from code" do
+    assert Instruction.build_from(1) == instruction_with(1, 0, 0, 0)
+    assert Instruction.build_from(2) == instruction_with(2, 0, 0, 0)
+    assert Instruction.build_from(1101) == instruction_with(1, 1, 1, 0)
+    assert Instruction.build_from(1102) == instruction_with(2, 1, 1, 0)
+    assert Instruction.build_from(1001) == instruction_with(1, 0, 1, 0)
+    assert Instruction.build_from(11101) == instruction_with(1, 1, 1, 1)
+    assert Instruction.build_from(10002) == instruction_with(2, 0, 0, 1)
+    assert Instruction.build_from(102) == instruction_with(2, 1, 0, 0)
+    assert Instruction.build_from(99) == instruction_with(99, 0, 0, 0)
+  end
+
+  defp instruction_with(opcode, first, second, third) do
+    %Instruction{
+      opcode: opcode,
+      first_parameter_mode: first,
+      second_parameter_mode: second,
+      third_parameter_mode: third
+    }
   end
 
 end
