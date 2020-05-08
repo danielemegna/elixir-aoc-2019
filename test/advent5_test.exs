@@ -23,29 +23,33 @@ defmodule Advent5Test do
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do
-    final_memory = Advent5.run_memory_program_from_instruction(initial_memory, 0)
+    run_program_test(initial_memory, [], expected_final_memory)
+  end
+
+  defp run_program_test(initial_memory, inputs, expected_final_memory) do
+    final_memory = Advent5.run_memory_program_from_instruction(initial_memory, 0, inputs)
     assert final_memory == expected_final_memory
   end
 
 end
 
-defmodule InstructionTest do
+defmodule InstructionCodeTest do
   use ExUnit.Case
 
-  test "build Instruction from code" do
-    assert Instruction.build_from(1) == instruction_with(1, 0, 0, 0)
-    assert Instruction.build_from(2) == instruction_with(2, 0, 0, 0)
-    assert Instruction.build_from(1101) == instruction_with(1, 1, 1, 0)
-    assert Instruction.build_from(1102) == instruction_with(2, 1, 1, 0)
-    assert Instruction.build_from(1001) == instruction_with(1, 0, 1, 0)
-    assert Instruction.build_from(11101) == instruction_with(1, 1, 1, 1)
-    assert Instruction.build_from(10002) == instruction_with(2, 0, 0, 1)
-    assert Instruction.build_from(102) == instruction_with(2, 1, 0, 0)
-    assert Instruction.build_from(99) == instruction_with(99, 0, 0, 0)
+  test "build InstructionCode from code" do
+    assert InstructionCode.build_from(1) == instruction_with(1, 0, 0, 0)
+    assert InstructionCode.build_from(2) == instruction_with(2, 0, 0, 0)
+    assert InstructionCode.build_from(1101) == instruction_with(1, 1, 1, 0)
+    assert InstructionCode.build_from(1102) == instruction_with(2, 1, 1, 0)
+    assert InstructionCode.build_from(1001) == instruction_with(1, 0, 1, 0)
+    assert InstructionCode.build_from(11101) == instruction_with(1, 1, 1, 1)
+    assert InstructionCode.build_from(10002) == instruction_with(2, 0, 0, 1)
+    assert InstructionCode.build_from(102) == instruction_with(2, 1, 0, 0)
+    assert InstructionCode.build_from(99) == instruction_with(99, 0, 0, 0)
   end
 
   defp instruction_with(opcode, first, second, third) do
-    %Instruction{
+    %InstructionCode{
       opcode: opcode,
       first_parameter_mode: first,
       second_parameter_mode: second,
