@@ -6,15 +6,23 @@ defmodule Advent5 do
   end
 
   def run_memory_program_from_instruction(memory, instruction_pointer, inputs) do
-    instruction_code = InstructionCode.build_from(Enum.at(memory, instruction_pointer))
+    instruction_code = Enum.at(memory, instruction_pointer)
     if(halt_program_instruction?(instruction_code)) do
       memory
     else
+      instruction_length = case(instruction_code) do
+        3 -> 2
+        _ -> 4
+      end
+      instruction_code = InstructionCode.build_from(instruction_code)
       memory
-        |> compute_instruction(instruction_code, instruction_pointer)
-        |> run_memory_program_from_instruction(instruction_pointer + 4, inputs)
+        |> compute_instruction(instruction_code, instruction_pointer, inputs)
+        |> run_memory_program_from_instruction(instruction_pointer + instruction_length, inputs)
     end
   end
+
+  defp halt_program_instruction?(99), do: true
+  defp halt_program_instruction?(_), do: false
 
   defp run_memory_program_with_inputs(memory, inputs) do
     run_memory_program_from_instruction(memory, 0, inputs)
@@ -28,11 +36,14 @@ defmodule Advent5 do
       |> Enum.map(fn({n, _}) -> n end)
   end
 
-  defp halt_program_instruction?(instruction_code) do
-    instruction_code.opcode == 99
+
+  defp compute_instruction(memory, %{opcode: 3}, instruction_pointer, [next_input | input_rest]) do
+    first_parameter = Enum.at(memory, instruction_pointer + 1)
+    memory
+      |> List.replace_at(first_parameter, next_input)
   end
 
-  defp compute_instruction(memory, instruction_code, instruction_pointer) do
+  defp compute_instruction(memory, instruction_code, instruction_pointer, _inputs) do
     first_parameter = case(instruction_code.first_parameter_mode) do
       1 -> Enum.at(memory, instruction_pointer + 1)
       0 -> Enum.at(memory, Enum.at(memory, instruction_pointer + 1))

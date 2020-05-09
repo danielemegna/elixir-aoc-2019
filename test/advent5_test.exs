@@ -16,6 +16,10 @@ defmodule Advent5Test do
     run_program_test([101,1,4,0,99], [100,1,4,0,99]) # (1 + 99 = 100)
   end
 
+  test "introduce get input operation" do
+    run_program_test([3,5,99,123,123,123], [987], [3,5,99,123,123,987]) # (put 987 in position 5)
+  end
+
   @tag :skip
   test "resolve level" do
     result = Advent5.resolve
@@ -46,6 +50,7 @@ defmodule InstructionCodeTest do
     assert InstructionCode.build_from(10002) == instruction_with(2, 0, 0, 1)
     assert InstructionCode.build_from(102) == instruction_with(2, 1, 0, 0)
     assert InstructionCode.build_from(99) == instruction_with(99, 0, 0, 0)
+    assert InstructionCode.build_from(3) == instruction_with(3, 0, 0, 0)
   end
 
   defp instruction_with(opcode, first, second, third) do
