@@ -1,3 +1,33 @@
+defmodule Instruction do
+  @enforce_keys [:code, :memory_pointer, :length]
+  defstruct @enforce_keys
+
+  def build_from(instruction_code, memory_pointer) do
+    instruction_length = case(instruction_code.opcode) do
+      3 -> 2
+      _ -> 4
+    end
+    %Instruction{
+      code: instruction_code,
+      memory_pointer: memory_pointer,
+      length: instruction_length
+    }
+  end
+end
+
+defmodule InstructionCode do
+  defstruct opcode: 1, first_parameter_mode: 0, second_parameter_mode: 0, third_parameter_mode: 0
+
+  def build_from(code) do
+    %InstructionCode{
+      opcode: rem(code, 100),
+      first_parameter_mode: rem(div(code, 100), 10),
+      second_parameter_mode: rem(div(code, 1000), 10),
+      third_parameter_mode: div(code, 10000)
+    }
+  end
+end
+
 defmodule Advent5 do
 
   def resolve do
@@ -6,22 +36,19 @@ defmodule Advent5 do
   end
 
   def run_memory_program_from_instruction(memory, instruction_pointer, inputs) do
-    instruction_code = Enum.at(memory, instruction_pointer)
-    if(halt_program_instruction?(instruction_code)) do
+    instruction_code = memory |> Enum.at(instruction_pointer) |> InstructionCode.build_from
+    instruction = Instruction.build_from(instruction_code, instruction_pointer)
+
+    if(halt_program_instruction?(instruction)) do
       memory
     else
-      instruction_length = case(instruction_code) do
-        3 -> 2
-        _ -> 4
-      end
-      instruction_code = InstructionCode.build_from(instruction_code)
       memory
-        |> compute_instruction(instruction_code, instruction_pointer, inputs)
-        |> run_memory_program_from_instruction(instruction_pointer + instruction_length, inputs)
+        |> compute_instruction(instruction, inputs)
+        |> run_memory_program_from_instruction(instruction_pointer + instruction.length, inputs)
     end
   end
 
-  defp halt_program_instruction?(99), do: true
+  defp halt_program_instruction?(%{code: %{opcode: 99}}), do: true
   defp halt_program_instruction?(_), do: false
 
   defp run_memory_program_with_inputs(memory, inputs) do
@@ -37,24 +64,24 @@ defmodule Advent5 do
   end
 
 
-  defp compute_instruction(memory, %{opcode: 3}, instruction_pointer, [next_input | input_rest]) do
-    first_parameter = Enum.at(memory, instruction_pointer + 1)
+  defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, [next_input | _input_rest]) do
+    first_parameter = Enum.at(memory, instruction.memory_pointer + 1)
     memory
       |> List.replace_at(first_parameter, next_input)
   end
 
-  defp compute_instruction(memory, instruction_code, instruction_pointer, _inputs) do
-    first_parameter = case(instruction_code.first_parameter_mode) do
-      1 -> Enum.at(memory, instruction_pointer + 1)
-      0 -> Enum.at(memory, Enum.at(memory, instruction_pointer + 1))
+  defp compute_instruction(memory, instruction, _inputs) do
+    first_parameter = case(instruction.code.first_parameter_mode) do
+      1 -> Enum.at(memory, instruction.memory_pointer + 1)
+      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
     end
-    second_parameter = case(instruction_code.second_parameter_mode) do
-      1 -> Enum.at(memory, instruction_pointer + 2)
-      0 -> Enum.at(memory, Enum.at(memory, instruction_pointer + 2))
+    second_parameter = case(instruction.code.second_parameter_mode) do
+      1 -> Enum.at(memory, instruction.memory_pointer + 2)
+      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 2))
     end
-    third_parameter = Enum.at(memory, instruction_pointer + 3)
+    third_parameter = Enum.at(memory, instruction.memory_pointer + 3)
 
-    instruction_result = case(instruction_code.opcode) do
+    instruction_result = case(instruction.code.opcode) do
       1 -> first_parameter + second_parameter
       2 -> first_parameter * second_parameter
     end
@@ -63,16 +90,3 @@ defmodule Advent5 do
 
 end
 
-defmodule InstructionCode do
-  defstruct opcode: 1, first_parameter_mode: 0, second_parameter_mode: 0, third_parameter_mode: 0
-
-  def build_from(code) do
-    %InstructionCode{
-      opcode: rem(code, 100),
-      first_parameter_mode: rem(div(code, 100), 10),
-      second_parameter_mode: rem(div(code, 1000), 10),
-      third_parameter_mode: div(code, 10000)
-    }
-  end
-
-end
