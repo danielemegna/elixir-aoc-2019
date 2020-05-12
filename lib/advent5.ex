@@ -2,7 +2,8 @@ defmodule Instruction do
   @enforce_keys [:code, :memory_pointer, :length]
   defstruct @enforce_keys
 
-  def build_from(instruction_code, memory_pointer) do
+  def build_from(instruction_code_from_memory, memory_pointer) do
+    instruction_code = InstructionCode.build_from(instruction_code_from_memory)
     instruction_length = case(instruction_code.opcode) do
       3 -> 2
       _ -> 4
@@ -16,14 +17,15 @@ defmodule Instruction do
 end
 
 defmodule InstructionCode do
-  defstruct opcode: 1, first_parameter_mode: 0, second_parameter_mode: 0, third_parameter_mode: 0
+  @enforce_keys [:opcode, :first_parameter_mode, :second_parameter_mode, :third_parameter_mode]
+  defstruct @enforce_keys
 
-  def build_from(code) do
+  def build_from(instruction_code_from_memory) do
     %InstructionCode{
-      opcode: rem(code, 100),
-      first_parameter_mode: rem(div(code, 100), 10),
-      second_parameter_mode: rem(div(code, 1000), 10),
-      third_parameter_mode: div(code, 10000)
+      opcode: rem(instruction_code_from_memory, 100),
+      first_parameter_mode: rem(div(instruction_code_from_memory, 100), 10),
+      second_parameter_mode: rem(div(instruction_code_from_memory, 1000), 10),
+      third_parameter_mode: div(instruction_code_from_memory, 10000)
     }
   end
 end
@@ -36,8 +38,10 @@ defmodule Advent5 do
   end
 
   def run_memory_program_from_instruction(memory, instruction_pointer, input) do
-    instruction_code = memory |> Enum.at(instruction_pointer) |> InstructionCode.build_from
-    instruction = Instruction.build_from(instruction_code, instruction_pointer)
+    instruction = Instruction.build_from(
+      Enum.at(memory, instruction_pointer),
+      instruction_pointer
+    )
 
     if(halt_program_instruction?(instruction)) do
       memory
