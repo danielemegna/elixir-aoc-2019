@@ -32,10 +32,10 @@ defmodule Advent5 do
 
   def resolve do
     read_initial_memory_from_file()
-      |> run_memory_program_with_inputs([1])
+      |> run_memory_program_from_instruction(0, 1)
   end
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, inputs) do
+  def run_memory_program_from_instruction(memory, instruction_pointer, input) do
     instruction_code = memory |> Enum.at(instruction_pointer) |> InstructionCode.build_from
     instruction = Instruction.build_from(instruction_code, instruction_pointer)
 
@@ -43,17 +43,13 @@ defmodule Advent5 do
       memory
     else
       memory
-        |> compute_instruction(instruction, inputs)
-        |> run_memory_program_from_instruction(instruction_pointer + instruction.length, inputs)
+        |> compute_instruction(instruction, input)
+        |> run_memory_program_from_instruction(instruction_pointer + instruction.length, input)
     end
   end
 
   defp halt_program_instruction?(%{code: %{opcode: 99}}), do: true
   defp halt_program_instruction?(_), do: false
-
-  defp run_memory_program_with_inputs(memory, inputs) do
-    run_memory_program_from_instruction(memory, 0, inputs)
-  end
 
   defp read_initial_memory_from_file do
     File.stream!("advent5.txt")
@@ -64,13 +60,12 @@ defmodule Advent5 do
   end
 
 
-  defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, [next_input | _input_rest]) do
+  defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, input) do
     first_parameter = Enum.at(memory, instruction.memory_pointer + 1)
-    memory
-      |> List.replace_at(first_parameter, next_input)
+    memory |> List.replace_at(first_parameter, input)
   end
 
-  defp compute_instruction(memory, instruction, _inputs) do
+  defp compute_instruction(memory, instruction, _input) do
     first_parameter = case(instruction.code.first_parameter_mode) do
       1 -> Enum.at(memory, instruction.memory_pointer + 1)
       0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
