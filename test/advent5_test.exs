@@ -25,10 +25,9 @@ defmodule Advent5Test do
     run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
 
-  @tag :skip
   test "resolve level" do
     result = Advent5.resolve
-    assert result == 2894520
+    assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do

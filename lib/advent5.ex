@@ -34,8 +34,10 @@ end
 defmodule Advent5 do
 
   def resolve do
-    read_initial_memory_from_file()
+    {_, output} = read_initial_memory_from_file()
       |> run_memory_program_from_instruction(0, 1, [])
+
+    output
   end
 
   def run_memory_program_from_instruction(memory, instruction_pointer, input, outputs_stack) do
