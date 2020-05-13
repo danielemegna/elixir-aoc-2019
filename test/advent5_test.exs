@@ -17,7 +17,12 @@ defmodule Advent5Test do
   end
 
   test "introduce get input operation" do
-    run_program_test([3,5,99,123,123,123], 987, [3,5,99,123,123,987]) # (put 987 in position 5)
+    run_program_test_with_input([3,5,99,123,123,123], 987, [3,5,99,123,123,987]) # (put 987 in position 5)
+  end
+
+  test "introduce output operation" do
+    run_program_test_with_expected_output([4,5,99,123,123,46], [4,5,99,123,123,46], [46]) # (output 46 from position 5)
+    run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
 
   @tag :skip
@@ -27,12 +32,21 @@ defmodule Advent5Test do
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do
-    run_program_test(initial_memory, 42, expected_final_memory)
+    run_program_test(initial_memory, 42, expected_final_memory, [])
   end
 
-  defp run_program_test(initial_memory, input, expected_final_memory) do
-    final_memory = Advent5.run_memory_program_from_instruction(initial_memory, 0, input)
+  defp run_program_test_with_expected_output(initial_memory, expected_final_memory, expected_outputs) do
+    run_program_test(initial_memory, 42, expected_final_memory, expected_outputs)
+  end
+
+  defp run_program_test_with_input(initial_memory, input, expected_final_memory) do
+    run_program_test(initial_memory, input, expected_final_memory, [])
+  end
+
+  defp run_program_test(initial_memory, input, expected_final_memory, expected_outputs) do
+    { final_memory, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, input, [])
     assert final_memory == expected_final_memory
+    assert outputs == expected_outputs
   end
 
 end
