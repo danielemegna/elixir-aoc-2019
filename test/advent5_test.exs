@@ -54,25 +54,39 @@ defmodule InstructionCodeTest do
   use ExUnit.Case
 
   test "build InstructionCode from code" do
-    assert InstructionCode.build_from(1) == instruction_with(1, 0, 0, 0)
-    assert InstructionCode.build_from(2) == instruction_with(2, 0, 0, 0)
-    assert InstructionCode.build_from(1101) == instruction_with(1, 1, 1, 0)
-    assert InstructionCode.build_from(1102) == instruction_with(2, 1, 1, 0)
-    assert InstructionCode.build_from(1001) == instruction_with(1, 0, 1, 0)
-    assert InstructionCode.build_from(11101) == instruction_with(1, 1, 1, 1)
-    assert InstructionCode.build_from(10002) == instruction_with(2, 0, 0, 1)
-    assert InstructionCode.build_from(102) == instruction_with(2, 1, 0, 0)
-    assert InstructionCode.build_from(99) == instruction_with(99, 0, 0, 0)
-    assert InstructionCode.build_from(3) == instruction_with(3, 0, 0, 0)
+    assert InstructionCode.build_from(1) == instruction_code_with(1, 0, 0, 0)
+    assert InstructionCode.build_from(2) == instruction_code_with(2, 0, 0, 0)
+    assert InstructionCode.build_from(1101) == instruction_code_with(1, 1, 1, 0)
+    assert InstructionCode.build_from(1102) == instruction_code_with(2, 1, 1, 0)
+    assert InstructionCode.build_from(1001) == instruction_code_with(1, 0, 1, 0)
+    assert InstructionCode.build_from(11101) == instruction_code_with(1, 1, 1, 1)
+    assert InstructionCode.build_from(10002) == instruction_code_with(2, 0, 0, 1)
+    assert InstructionCode.build_from(102) == instruction_code_with(2, 1, 0, 0)
+    assert InstructionCode.build_from(99) == instruction_code_with(99, 0, 0, 0)
+    assert InstructionCode.build_from(3) == instruction_code_with(3, 0, 0, 0)
   end
 
-  defp instruction_with(opcode, first, second, third) do
+  defp instruction_code_with(opcode, first, second, third) do
     %InstructionCode{
       opcode: opcode,
       first_parameter_mode: first,
       second_parameter_mode: second,
       third_parameter_mode: third
     }
+  end
+
+end
+
+defmodule InstructionTest do
+  use ExUnit.Case
+
+  test "length is estabilished from opcode" do
+    any_pointer = 0
+    assert 4 == Instruction.build_from(1, any_pointer).length
+    assert 4 == Instruction.build_from(1102, any_pointer).length
+    assert 2 == Instruction.build_from(3, any_pointer).length
+    assert 2 == Instruction.build_from(10004, any_pointer).length
+    assert 1 == Instruction.build_from(99, any_pointer).length
   end
 
 end

@@ -49,8 +49,12 @@ defmodule Advent5 do
     if(halt_program_instruction?(instruction)) do
       { memory, outputs_stack }
     else
-      { new_memory, new_outputs_stack } = compute_instruction(memory, instruction, input, outputs_stack)
-      run_memory_program_from_instruction(new_memory, instruction_pointer + instruction.length, input, new_outputs_stack)
+      { new_memory, new_instruction_pointer, new_outputs_stack } =
+        compute_instruction(memory, instruction, input, outputs_stack)
+
+      run_memory_program_from_instruction(
+        new_memory, new_instruction_pointer, input, new_outputs_stack
+      )
     end
   end
 
@@ -60,7 +64,7 @@ defmodule Advent5 do
   defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, input, outputs_stack) do
     first_parameter = Enum.at(memory, instruction.memory_pointer + 1)
     new_memory = memory |> List.replace_at(first_parameter, input)
-    { new_memory, outputs_stack }
+    { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
   end
 
   defp compute_instruction(memory, %{code: %{opcode: 4}} = instruction, _input, outputs_stack) do
@@ -69,7 +73,7 @@ defmodule Advent5 do
       0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
     end
     new_outputs_stack = outputs_stack ++ [first_parameter]
-    { memory, new_outputs_stack }
+    { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
   end
 
   defp compute_instruction(memory, instruction, _input, outputs_stack) do
@@ -88,7 +92,7 @@ defmodule Advent5 do
       2 -> first_parameter * second_parameter
     end
     new_memory = memory |> List.replace_at(third_parameter, instruction_result)
-    { new_memory, outputs_stack }
+    { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
   end
 
   defp read_initial_memory_from_file do
