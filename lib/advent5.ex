@@ -15,6 +15,31 @@ defmodule Instruction do
       length: instruction_length
     }
   end
+
+  def first_parameter_from(%{code: %{opcode: 3}} = instruction, memory) do
+    # "Parameters that an instruction writes to will never be in immediate mode"
+    Enum.at(memory, instruction.memory_pointer + 1)
+  end
+
+  def first_parameter_from(instruction, memory) do
+    case(instruction.code.first_parameter_mode) do
+      1 -> Enum.at(memory, instruction.memory_pointer + 1)
+      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
+    end
+  end
+
+  def second_parameter_from(instruction, memory) do
+    case(instruction.code.second_parameter_mode) do
+      1 -> Enum.at(memory, instruction.memory_pointer + 2)
+      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 2))
+    end
+  end
+
+  def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2] do
+    # "Parameters that an instruction writes to will never be in immediate mode"
+    Enum.at(memory, instruction.memory_pointer + 3)
+  end
+
 end
 
 defmodule InstructionCode do
@@ -62,30 +87,21 @@ defmodule Advent5 do
   defp halt_program_instruction?(_), do: false
 
   defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, input, outputs_stack) do
-    first_parameter = Enum.at(memory, instruction.memory_pointer + 1)
+    first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_memory = memory |> List.replace_at(first_parameter, input)
     { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
   end
 
   defp compute_instruction(memory, %{code: %{opcode: 4}} = instruction, _input, outputs_stack) do
-    first_parameter = case(instruction.code.first_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 1)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
-    end
+    first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_outputs_stack = outputs_stack ++ [first_parameter]
     { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
   end
 
   defp compute_instruction(memory, instruction, _input, outputs_stack) do
-    first_parameter = case(instruction.code.first_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 1)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
-    end
-    second_parameter = case(instruction.code.second_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 2)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 2))
-    end
-    third_parameter = Enum.at(memory, instruction.memory_pointer + 3)
+    first_parameter = Instruction.first_parameter_from(instruction, memory)
+    second_parameter = Instruction.second_parameter_from(instruction, memory)
+    third_parameter = Instruction.third_parameter_from(instruction, memory)
 
     instruction_result = case(instruction.code.opcode) do
       1 -> first_parameter + second_parameter
