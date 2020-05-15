@@ -133,26 +133,19 @@ defmodule Advent5 do
     { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: :jump_if_true}} = instruction, _input_value, outputs_stack) do
+  defp compute_instruction(memory, %{code: %{opcode: opcode}} = instruction, _input_value, outputs_stack)
+    when opcode in [:jump_if_true, :jump_if_false]
+  do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     second_parameter = Instruction.second_parameter_from(instruction, memory)
-    new_instruction_pointer = if(first_parameter != 0) do
-      second_parameter
-    else
-      instruction.memory_pointer + instruction.length
+    should_jump = case(opcode) do
+      :jump_if_true -> first_parameter != 0
+      :jump_if_false -> first_parameter == 0
     end
-      
-    { memory, new_instruction_pointer, outputs_stack }
-  end
-
-  defp compute_instruction(memory, %{code: %{opcode: :jump_if_false}} = instruction, _input_value, outputs_stack) do
-    first_parameter = Instruction.first_parameter_from(instruction, memory)
-    second_parameter = Instruction.second_parameter_from(instruction, memory)
-    new_instruction_pointer = if(first_parameter == 0) do
-      second_parameter
-    else
-      instruction.memory_pointer + instruction.length
-    end
+    new_instruction_pointer =
+      if(should_jump) do second_parameter
+      else instruction.memory_pointer + instruction.length
+      end
       
     { memory, new_instruction_pointer, outputs_stack }
   end
