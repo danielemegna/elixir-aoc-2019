@@ -13,7 +13,7 @@ defmodule Instruction do
 
   # "Parameters that an instruction writes to will never be in immediate mode"
   def first_parameter_from(%{code: %{opcode: :read}} = instruction, memory), do:
-    get_parameter_for(1, memory, instruction.memory_pointer, 1)
+    get_parameter_for(:immediate, memory, instruction.memory_pointer, 1)
 
   def first_parameter_from(instruction, memory), do:
     get_parameter_for(instruction.code.first_parameter_mode, memory, instruction.memory_pointer, 1)
@@ -23,7 +23,7 @@ defmodule Instruction do
 
   # "Parameters that an instruction writes to will never be in immediate mode"
   def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [:add, :mult, :less_than, :equals], do:
-    get_parameter_for(1, memory, instruction.memory_pointer, 3)
+    get_parameter_for(:immediate, memory, instruction.memory_pointer, 3)
 
   def third_parameter_from(instruction, memory), do:
     get_parameter_for(instruction.code.third_parameter_mode, memory, instruction.memory_pointer, 3)
@@ -39,8 +39,8 @@ defmodule Instruction do
 
   defp get_parameter_for(parameter_mode, memory, memory_pointer, memory_offset) do
     case(parameter_mode) do
-      1 -> Enum.at(memory, memory_pointer + memory_offset)
-      0 -> Enum.at(memory, Enum.at(memory, memory_pointer + memory_offset))
+      :immediate -> Enum.at(memory, memory_pointer + memory_offset)
+      :position -> Enum.at(memory, Enum.at(memory, memory_pointer + memory_offset))
     end
   end
 
@@ -52,11 +52,14 @@ defmodule InstructionCode do
 
   def build_from(instruction_code_from_memory) do
     opcode = rem(instruction_code_from_memory, 100)
+    first_parameter_mode = rem(div(instruction_code_from_memory, 100), 10)
+    second_parameter_mode = rem(div(instruction_code_from_memory, 1000), 10)
+    third_parameter_mode = div(instruction_code_from_memory, 10000)
     %InstructionCode{
       opcode: opcode_to_atom(opcode),
-      first_parameter_mode: rem(div(instruction_code_from_memory, 100), 10),
-      second_parameter_mode: rem(div(instruction_code_from_memory, 1000), 10),
-      third_parameter_mode: div(instruction_code_from_memory, 10000)
+      first_parameter_mode: parameter_mode_to_atom(first_parameter_mode),
+      second_parameter_mode: parameter_mode_to_atom(second_parameter_mode),
+      third_parameter_mode: parameter_mode_to_atom(third_parameter_mode)
     }
   end
 
@@ -73,6 +76,14 @@ defmodule InstructionCode do
       99 -> :halt
     end
   end
+
+  defp parameter_mode_to_atom(parameter_mode) do
+    case (parameter_mode) do
+      0 -> :position
+      1 -> :immediate
+    end
+  end
+
 end
 
 defmodule Advent5 do
