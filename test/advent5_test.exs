@@ -34,6 +34,16 @@ defmodule Advent5Test do
     run_program_test([3,3,1108,-1,19,3,4,3,99], 6, [3,3,1108,0,19,3,4,3,99], [0]) # input is not equal to 19 --> output 0
   end
 
+  test "introduce 'less than' operation (opcode 7)" do
+    # position mode
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 7, [3,9,7,9,10,9,4,9,99,1,8], [1]) # input is less than 8 --> output 1
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 8, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 9, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
+    # immediate mode
+    run_program_test([3,3,1107,-1,8,3,4,3,99], 7, [3,3,1107,1,8,3,4,3,99], [1]) # input is less than 8 --> output 1
+    run_program_test([3,3,1107,-1,8,3,4,3,99], 9, [3,3,1107,0,8,3,4,3,99], [0]) # input is not less than 8 --> output 0
+  end
+
   test "resolve level" do
     result = Advent5.resolve
     assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]

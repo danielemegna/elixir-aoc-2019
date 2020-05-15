@@ -5,7 +5,7 @@ defmodule Instruction do
   def build_from(instruction_code_from_memory, memory_pointer) do
     instruction_code = InstructionCode.build_from(instruction_code_from_memory)
     instruction_length = case(instruction_code.opcode) do
-      op when op in [1, 2, 8] -> 4
+      op when op in [1, 2, 7, 8] -> 4
       op when op in [3, 4] -> 2
       99 -> 1
     end
@@ -35,7 +35,7 @@ defmodule Instruction do
     end
   end
 
-  def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2, 8] do
+  def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2, 7, 8] do
     # "Parameters that an instruction writes to will never be in immediate mode"
     Enum.at(memory, instruction.memory_pointer + 3)
   end
@@ -106,6 +106,7 @@ defmodule Advent5 do
     instruction_result = case(instruction.code.opcode) do
       1 -> first_parameter + second_parameter
       2 -> first_parameter * second_parameter
+      7 -> (if (first_parameter < second_parameter), do: 1, else: 0)
       8 -> (if (first_parameter == second_parameter), do: 1, else: 0)
     end
     new_memory = memory |> List.replace_at(third_parameter, instruction_result)
