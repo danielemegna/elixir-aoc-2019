@@ -25,6 +25,15 @@ defmodule Advent5Test do
     run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
 
+  test "introduce equals operation (opcode 8)" do
+    # position mode
+    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 19, [3,9,8,9,10,9,4,9,99,1,19], [1]) # input is equal to 19 --> output 1
+    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 6, [3,9,8,9,10,9,4,9,99,0,19], [0]) # input is not equal to 19 --> output 0
+    # immediate mode
+    run_program_test([3,3,1108,-1,19,3,4,3,99], 19, [3,3,1108,1,19,3,4,3,99], [1]) # input is equal to 19 --> output 1
+    run_program_test([3,3,1108,-1,19,3,4,3,99], 6, [3,3,1108,0,19,3,4,3,99], [0]) # input is not equal to 19 --> output 0
+  end
+
   test "resolve level" do
     result = Advent5.resolve
     assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]
