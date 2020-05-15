@@ -65,7 +65,7 @@ defmodule Advent5 do
     output
   end
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, input, outputs_stack) do
+  def run_memory_program_from_instruction(memory, instruction_pointer, input_value, outputs_stack) do
     instruction = Instruction.build_from(
       Enum.at(memory, instruction_pointer),
       instruction_pointer
@@ -75,10 +75,10 @@ defmodule Advent5 do
       { memory, outputs_stack }
     else
       { new_memory, new_instruction_pointer, new_outputs_stack } =
-        compute_instruction(memory, instruction, input, outputs_stack)
+        compute_instruction(memory, instruction, input_value, outputs_stack)
 
       run_memory_program_from_instruction(
-        new_memory, new_instruction_pointer, input, new_outputs_stack
+        new_memory, new_instruction_pointer, input_value, new_outputs_stack
       )
     end
   end
@@ -86,19 +86,19 @@ defmodule Advent5 do
   defp halt_program_instruction?(%{code: %{opcode: 99}}), do: true
   defp halt_program_instruction?(_), do: false
 
-  defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, input, outputs_stack) do
+  defp compute_instruction(memory, %{code: %{opcode: 3}} = instruction, input_value, outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
-    new_memory = memory |> List.replace_at(first_parameter, input)
+    new_memory = memory |> List.replace_at(first_parameter, input_value)
     { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: 4}} = instruction, _input, outputs_stack) do
+  defp compute_instruction(memory, %{code: %{opcode: 4}} = instruction, _input_value, outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_outputs_stack = outputs_stack ++ [first_parameter]
     { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
   end
 
-  defp compute_instruction(memory, instruction, _input, outputs_stack) do
+  defp compute_instruction(memory, instruction, _input_value, outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     second_parameter = Instruction.second_parameter_from(instruction, memory)
     third_parameter = Instruction.third_parameter_from(instruction, memory)

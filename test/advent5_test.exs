@@ -16,11 +16,11 @@ defmodule Advent5Test do
     run_program_test([101,1,4,0,99], [100,1,4,0,99]) # (1 + 99 = 100)
   end
 
-  test "introduce get input operation" do
+  test "introduce get input operation (opcode 3)" do
     run_program_test_with_input([3,5,99,123,123,123], 987, [3,5,99,123,123,987]) # (put 987 in position 5)
   end
 
-  test "introduce output operation" do
+  test "introduce output operation (opcode 4)" do
     run_program_test_with_expected_output([4,5,99,123,123,46], [4,5,99,123,123,46], [46]) # (output 46 from position 5)
     run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
