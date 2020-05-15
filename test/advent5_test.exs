@@ -75,6 +75,18 @@ defmodule Advent5Test do
     run_program_test([3,3,1108,-1,19,3,4,3,99], 6, [3,3,1108,0,19,3,4,3,99], [0]) # input is not equal to 19 --> output 0
   end
 
+  test "final test for second part" do
+    memory = [
+      3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31,
+      1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104,
+      999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
+    ]
+
+    run_program_test(memory, 7, [999]) # output 999 if the input value is below 8
+    run_program_test(memory, 8, [1000]) # output 1000 if the input value is equal to 8
+    run_program_test(memory, 9, [1001]) # output 1001 if the input value is greater than 8.
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, 42, expected_final_memory, [])
   end
@@ -85,6 +97,11 @@ defmodule Advent5Test do
 
   defp run_program_test_with_input(initial_memory, input, expected_final_memory) do
     run_program_test(initial_memory, input, expected_final_memory, [])
+  end
+
+  defp run_program_test(initial_memory, input, expected_outputs) do
+    { _, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, input, [])
+    assert outputs == expected_outputs
   end
 
   defp run_program_test(initial_memory, input, expected_final_memory, expected_outputs) do
