@@ -66,9 +66,16 @@ end
 
 defmodule Advent5 do
 
-  def resolve do
+  def resolve_first_part do
     {_, output} = read_initial_memory_from_file()
       |> run_memory_program_from_instruction(0, 1, [])
+
+    output
+  end
+
+  def resolve_second_part do
+    {_, output} = read_initial_memory_from_file()
+      |> run_memory_program_from_instruction(0, 5, [])
 
     output
   end
