@@ -4,47 +4,43 @@ defmodule Instruction do
 
   def build_from(instruction_code_from_memory, memory_pointer) do
     instruction_code = InstructionCode.build_from(instruction_code_from_memory)
-    instruction_length = case(instruction_code.opcode) do
+    %Instruction{
+      code: instruction_code,
+      memory_pointer: memory_pointer,
+      length: instruction_length_for(instruction_code.opcode)
+    }
+  end
+
+  # "Parameters that an instruction writes to will never be in immediate mode"
+  def first_parameter_from(%{code: %{opcode: 3}} = instruction, memory), do:
+    get_parameter_for(1, memory, instruction.memory_pointer, 1)
+
+  def first_parameter_from(instruction, memory), do:
+    get_parameter_for(instruction.code.first_parameter_mode, memory, instruction.memory_pointer, 1)
+
+  def second_parameter_from(instruction, memory), do:
+    get_parameter_for(instruction.code.second_parameter_mode, memory, instruction.memory_pointer, 2)
+
+  # "Parameters that an instruction writes to will never be in immediate mode"
+  def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2, 7, 8], do:
+    get_parameter_for(1, memory, instruction.memory_pointer, 3)
+
+  def third_parameter_from(instruction, memory), do:
+    get_parameter_for(instruction.code.third_parameter_mode, memory, instruction.memory_pointer, 3)
+
+  defp instruction_length_for(opcode) do
+    case(opcode) do
       op when op in [1, 2, 7, 8] -> 4
       op when op in [3, 4] -> 2
       op when op in [5, 6] -> 3
       99 -> 1
     end
-    %Instruction{
-      code: instruction_code,
-      memory_pointer: memory_pointer,
-      length: instruction_length
-    }
   end
 
-  def first_parameter_from(%{code: %{opcode: 3}} = instruction, memory) do
-    # "Parameters that an instruction writes to will never be in immediate mode"
-    Enum.at(memory, instruction.memory_pointer + 1)
-  end
-
-  def first_parameter_from(instruction, memory) do
-    case(instruction.code.first_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 1)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 1))
-    end
-  end
-
-  def second_parameter_from(instruction, memory) do
-    case(instruction.code.second_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 2)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 2))
-    end
-  end
-
-  def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2, 7, 8] do
-    # "Parameters that an instruction writes to will never be in immediate mode"
-    Enum.at(memory, instruction.memory_pointer + 3)
-  end
-
-  def third_parameter_from(instruction, memory) do
-    case(instruction.code.third_parameter_mode) do
-      1 -> Enum.at(memory, instruction.memory_pointer + 3)
-      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 3))
+  defp get_parameter_for(parameter_mode, memory, memory_pointer, memory_offset) do
+    case(parameter_mode) do
+      1 -> Enum.at(memory, memory_pointer + memory_offset)
+      0 -> Enum.at(memory, Enum.at(memory, memory_pointer + memory_offset))
     end
   end
 
