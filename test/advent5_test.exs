@@ -25,23 +25,9 @@ defmodule Advent5Test do
     run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
 
-  test "introduce equals operation (opcode 8)" do
-    # position mode
-    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 19, [3,9,8,9,10,9,4,9,99,1,19], [1]) # input is equal to 19 --> output 1
-    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 6, [3,9,8,9,10,9,4,9,99,0,19], [0]) # input is not equal to 19 --> output 0
-    # immediate mode
-    run_program_test([3,3,1108,-1,19,3,4,3,99], 19, [3,3,1108,1,19,3,4,3,99], [1]) # input is equal to 19 --> output 1
-    run_program_test([3,3,1108,-1,19,3,4,3,99], 6, [3,3,1108,0,19,3,4,3,99], [0]) # input is not equal to 19 --> output 0
-  end
-
-  test "introduce 'less than' operation (opcode 7)" do
-    # position mode
-    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 7, [3,9,7,9,10,9,4,9,99,1,8], [1]) # input is less than 8 --> output 1
-    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 8, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
-    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 9, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
-    # immediate mode
-    run_program_test([3,3,1107,-1,8,3,4,3,99], 7, [3,3,1107,1,8,3,4,3,99], [1]) # input is less than 8 --> output 1
-    run_program_test([3,3,1107,-1,8,3,4,3,99], 9, [3,3,1107,0,8,3,4,3,99], [0]) # input is not less than 8 --> output 0
+  test "resolve level" do
+    result = Advent5.resolve
+    assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]
   end
 
   test "introduce 'jump if true' operation (opcode 5)" do
@@ -70,9 +56,23 @@ defmodule Advent5Test do
     )
   end
 
-  test "resolve level" do
-    result = Advent5.resolve
-    assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]
+  test "introduce 'less than' operation (opcode 7)" do
+    # position mode
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 7, [3,9,7,9,10,9,4,9,99,1,8], [1]) # input is less than 8 --> output 1
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 8, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
+    run_program_test([3,9,7,9,10,9,4,9,99,-1,8], 9, [3,9,7,9,10,9,4,9,99,0,8], [0]) # input is not less than 8 --> output 0
+    # immediate mode
+    run_program_test([3,3,1107,-1,8,3,4,3,99], 7, [3,3,1107,1,8,3,4,3,99], [1]) # input is less than 8 --> output 1
+    run_program_test([3,3,1107,-1,8,3,4,3,99], 9, [3,3,1107,0,8,3,4,3,99], [0]) # input is not less than 8 --> output 0
+  end
+
+  test "introduce equals operation (opcode 8)" do
+    # position mode
+    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 19, [3,9,8,9,10,9,4,9,99,1,19], [1]) # input is equal to 19 --> output 1
+    run_program_test([3,9,8,9,10,9,4,9,99,-1,19], 6, [3,9,8,9,10,9,4,9,99,0,19], [0]) # input is not equal to 19 --> output 0
+    # immediate mode
+    run_program_test([3,3,1108,-1,19,3,4,3,99], 19, [3,3,1108,1,19,3,4,3,99], [1]) # input is equal to 19 --> output 1
+    run_program_test([3,3,1108,-1,19,3,4,3,99], 6, [3,3,1108,0,19,3,4,3,99], [0]) # input is not equal to 19 --> output 0
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do
