@@ -7,7 +7,7 @@ defmodule Instruction do
     instruction_length = case(instruction_code.opcode) do
       op when op in [1, 2, 7, 8] -> 4
       op when op in [3, 4] -> 2
-      6 -> 3
+      op when op in [5, 6] -> 3
       99 -> 1
     end
     %Instruction{
@@ -104,6 +104,18 @@ defmodule Advent5 do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_outputs_stack = outputs_stack ++ [first_parameter]
     { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
+  end
+
+  defp compute_instruction(memory, %{code: %{opcode: 5}} = instruction, _input_value, outputs_stack) do
+    first_parameter = Instruction.first_parameter_from(instruction, memory)
+    second_parameter = Instruction.second_parameter_from(instruction, memory)
+    new_instruction_pointer = if(first_parameter != 0) do
+      second_parameter
+    else
+      instruction.memory_pointer + instruction.length
+    end
+      
+    { memory, new_instruction_pointer, outputs_stack }
   end
 
   defp compute_instruction(memory, %{code: %{opcode: 6}} = instruction, _input_value, outputs_stack) do
