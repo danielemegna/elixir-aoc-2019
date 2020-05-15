@@ -44,6 +44,19 @@ defmodule Advent5Test do
     run_program_test([3,3,1107,-1,8,3,4,3,99], 9, [3,3,1107,0,8,3,4,3,99], [0]) # input is not less than 8 --> output 0
   end
 
+  test "introduce 'jump if false' operation (opcode 6)" do
+   # input 0 --> output 0
+    run_program_test(
+      [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], 0,
+      [3,12,6,12,15,1,13,14,13,4,13,99,0,0,1,9], [0]
+    )
+   # input not 0 --> output 1
+    run_program_test(
+      [3,12,6,12,15,1,13,14,13,4,13,99,-1,0,1,9], 19,
+      [3,12,6,12,15,1,13,14,13,4,13,99,19,1,1,9], [1]
+    )
+  end
+
   test "resolve level" do
     result = Advent5.resolve
     assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]

@@ -7,6 +7,7 @@ defmodule Instruction do
     instruction_length = case(instruction_code.opcode) do
       op when op in [1, 2, 7, 8] -> 4
       op when op in [3, 4] -> 2
+      6 -> 3
       99 -> 1
     end
     %Instruction{
@@ -38,6 +39,13 @@ defmodule Instruction do
   def third_parameter_from(%{code: %{opcode: opcode}} = instruction, memory) when opcode in [1, 2, 7, 8] do
     # "Parameters that an instruction writes to will never be in immediate mode"
     Enum.at(memory, instruction.memory_pointer + 3)
+  end
+
+  def third_parameter_from(instruction, memory) do
+    case(instruction.code.third_parameter_mode) do
+      1 -> Enum.at(memory, instruction.memory_pointer + 3)
+      0 -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + 3))
+    end
   end
 
 end
@@ -96,6 +104,18 @@ defmodule Advent5 do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_outputs_stack = outputs_stack ++ [first_parameter]
     { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
+  end
+
+  defp compute_instruction(memory, %{code: %{opcode: 6}} = instruction, _input_value, outputs_stack) do
+    first_parameter = Instruction.first_parameter_from(instruction, memory)
+    second_parameter = Instruction.second_parameter_from(instruction, memory)
+    new_instruction_pointer = if(first_parameter == 0) do
+      second_parameter
+    else
+      instruction.memory_pointer + instruction.length
+    end
+      
+    { memory, new_instruction_pointer, outputs_stack }
   end
 
   defp compute_instruction(memory, instruction, _input_value, outputs_stack) do
