@@ -1,19 +1,28 @@
 defmodule Advent6 do
 
-  def total_number_of_orbits(map) do
-    map
-      |> Enum.map(fn(pair) -> number_of_orbits(pair, map) end)
+  def total_number_of_orbits(raw_map) do
+    orbiting_to_orbited_map = raw_map_to_orbiting_map(raw_map)
+
+    orbiting_to_orbited_map
+      |> Map.keys
+      |> Enum.map(fn(orbiting) -> number_of_orbits(orbiting, orbiting_to_orbited_map) end)
       |> Enum.sum
   end
 
-  def number_of_orbits({object, orbitant}, map) do
-    if(object === "COM") do
+  defp number_of_orbits(orbiting, orbiting_to_orbited_map) do
+    orbited = Map.get(orbiting_to_orbited_map, orbiting)
+    if(orbited === "COM") do
       1 
     else
-      new_object = Enum.find(map, fn {x, y} -> y == object end) |> elem(0)
-      new_orbitant = object
-      1 + number_of_orbits({new_object, new_orbitant}, map)
+      new_orbiting = orbited
+      1 + number_of_orbits(new_orbiting, orbiting_to_orbited_map)
     end
+  end
+
+  defp raw_map_to_orbiting_map(raw_map) do
+    Enum.reduce(raw_map, %{}, fn({orbited, orbiting}, acc) ->
+      Map.put(acc, orbiting,  orbited)
+    end)
   end
 
 end
