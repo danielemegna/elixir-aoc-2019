@@ -1,5 +1,10 @@
 defmodule Advent6 do
 
+  def resolve do
+    read_raw_map_from_file()
+      |> total_number_of_orbits
+  end
+
   def total_number_of_orbits(raw_map) do
     orbiting_to_orbited_map = raw_map_to_orbiting_map(raw_map)
 
@@ -23,6 +28,13 @@ defmodule Advent6 do
     Enum.reduce(raw_map, %{}, fn({orbited, orbiting}, acc) ->
       Map.put(acc, orbiting,  orbited)
     end)
+  end
+
+  defp read_raw_map_from_file do
+    File.stream!("advent6.txt")
+      |> Enum.map(&String.trim/1)
+      |> Enum.map(&(String.split(&1, ")")))
+      |> Enum.map(fn([orbiting, orbited]) -> {orbiting, orbited} end)
   end
 
 end

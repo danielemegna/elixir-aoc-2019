@@ -23,4 +23,8 @@ defmodule Advent6Test do
     ]
     assert 42 == Advent6.total_number_of_orbits(map)
   end
+
+  test "resolve level" do
+    assert 200001 == Advent6.resolve
+  end
 end
