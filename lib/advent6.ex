@@ -7,20 +7,22 @@ defmodule Advent6 do
 
   def total_number_of_orbits(raw_map) do
     orbiting_to_orbited_map = raw_map_to_orbiting_map(raw_map)
+    orbiting_list = Map.keys(orbiting_to_orbited_map)
 
-    orbiting_to_orbited_map
-      |> Map.keys
-      |> Enum.map(fn(orbiting) -> number_of_orbits(orbiting, orbiting_to_orbited_map) end)
+    orbiting_list
+      |> Enum.map(fn(orbiting) -> path_to_center_of_mass(orbiting, orbiting_to_orbited_map) end)
+      |> Enum.map(&Enum.count/1)
       |> Enum.sum
   end
 
-  defp number_of_orbits(orbiting, orbiting_to_orbited_map) do
+  defp path_to_center_of_mass(orbiting, orbiting_to_orbited_map, partial_path \\ []) do
     orbited = Map.get(orbiting_to_orbited_map, orbiting)
+    path = [orbited | partial_path]
     if(orbited === "COM") do
-      1 
+      path
     else
       new_orbiting = orbited
-      1 + number_of_orbits(new_orbiting, orbiting_to_orbited_map)
+      path_to_center_of_mass(new_orbiting, orbiting_to_orbited_map, path)
     end
   end
 
