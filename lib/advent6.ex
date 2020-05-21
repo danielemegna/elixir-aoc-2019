@@ -15,6 +15,27 @@ defmodule Advent6 do
       |> Enum.sum
   end
 
+  def minimum_orbital_transfer_count_between(source, target, raw_map) do
+    orbiting_to_orbited_map = raw_map_to_orbiting_map(raw_map)
+    source_to_com = path_to_center_of_mass(source, orbiting_to_orbited_map)
+    target_to_com = path_to_center_of_mass(target, orbiting_to_orbited_map)
+
+    common_orbites = MapSet.intersection(MapSet.new(source_to_com), MapSet.new(target_to_com))
+      |> Enum.filter(&(&1 != "COM"))
+
+    Enum.map(common_orbites, fn(common_orbite) ->
+      source_to_common_transfer_count = source_to_com
+        |> Enum.take_while(fn x -> x != common_orbite end)
+        |> Enum.count
+      target_to_common_transfer_count = target_to_com
+        |> Enum.take_while(fn x -> x != common_orbite end)
+        |> Enum.count
+
+      source_to_common_transfer_count + target_to_common_transfer_count
+    end)
+    |> Enum.min
+  end
+
   defp path_to_center_of_mass(orbiting, orbiting_to_orbited_map, partial_reversed_path \\ []) do
     orbited = Map.get(orbiting_to_orbited_map, orbiting)
     reversed_path = [orbited | partial_reversed_path]
