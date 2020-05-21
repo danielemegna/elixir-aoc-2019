@@ -15,14 +15,14 @@ defmodule Advent6 do
       |> Enum.sum
   end
 
-  defp path_to_center_of_mass(orbiting, orbiting_to_orbited_map, partial_path \\ []) do
+  defp path_to_center_of_mass(orbiting, orbiting_to_orbited_map, partial_reversed_path \\ []) do
     orbited = Map.get(orbiting_to_orbited_map, orbiting)
-    path = [orbited | partial_path]
+    reversed_path = [orbited | partial_reversed_path]
     if(orbited === "COM") do
-      path
+      reversed_path |> Enum.reverse
     else
       new_orbiting = orbited
-      path_to_center_of_mass(new_orbiting, orbiting_to_orbited_map, path)
+      path_to_center_of_mass(new_orbiting, orbiting_to_orbited_map, reversed_path)
     end
   end
 
