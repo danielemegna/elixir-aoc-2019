@@ -1,6 +1,6 @@
 defmodule Advent6 do
 
-  def resolve do
+  def resolve_first_part do
     read_raw_map_from_file()
       |> total_number_of_orbits
   end
@@ -13,6 +13,11 @@ defmodule Advent6 do
       |> Enum.map(fn(orbiting) -> path_to_center_of_mass(orbiting, orbiting_to_orbited_map) end)
       |> Enum.map(&Enum.count/1)
       |> Enum.sum
+  end
+
+  def resolve_second_part do
+    raw_map = read_raw_map_from_file()
+    minimum_orbital_transfer_count_between("YOU", "SAN", raw_map)
   end
 
   def minimum_orbital_transfer_count_between(source, target, raw_map) do

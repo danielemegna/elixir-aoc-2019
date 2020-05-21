@@ -24,8 +24,8 @@ defmodule Advent6Test do
     assert 42 == Advent6.total_number_of_orbits(map)
   end
 
-  test "resolve level" do
-    assert 200001 == Advent6.resolve
+  test "resolve level (first part)" do
+    assert 200001 == Advent6.resolve_first_part
   end
 
   test "minimum_orbital_transfer_count_between test" do
@@ -46,5 +46,9 @@ defmodule Advent6Test do
     ]
 
     assert 4 == Advent6.minimum_orbital_transfer_count_between("YOU", "SAN", map)
+  end
+
+  test "resolve level (second part)" do
+    assert 379 == Advent6.resolve_second_part
   end
 end
