@@ -17,17 +17,22 @@ defmodule Advent5Test do
   end
 
   test "introduce get input operation (opcode 3)" do
-    run_program_test_with_input([3,5,99,123,123,123], 987, [3,5,99,123,123,987]) # (put 987 in position 5)
+    run_program_test([3,5,99,123,123,123], 987, [3,5,99,123,123,987], []) # (put 987 in position 5)
+  end
+
+  test "consume multiple inputs (opcode 3)" do
+    # (put 19 in position 5 and put 46 in position 4)
+    run_program_test([3,7,3,6,99,123,123,123], [19,46], [3,7,3,6,99,123,46,19], [])
   end
 
   test "introduce output operation (opcode 4)" do
-    run_program_test_with_expected_output([4,5,99,123,123,46], [4,5,99,123,123,46], [46]) # (output 46 from position 5)
-    run_program_test_with_expected_output([104,46,99,123,123,123], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
+    run_program_test([4,5,99,123,123,46], [], [4,5,99,123,123,46], [46]) # (output 46 from position 5)
+    run_program_test([104,46,99,123,123,123], [], [104,46,99,123,123,123], [46]) # (output 46 immediate mode)
   end
 
   test "resolve level (first part)" do
     result = Advent5.resolve_first_part
-    assert result == [0, 0, 0, 0, 0, 0, 0, 0, 0, 3122865]
+    assert result == [0,0,0,0,0,0,0,0,0,3122865]
   end
 
   test "introduce 'jump if true' operation (opcode 5)" do
@@ -82,9 +87,9 @@ defmodule Advent5Test do
       999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99
     ]
 
-    run_program_test(memory, 7, [999]) # output 999 if the input value is below 8
-    run_program_test(memory, 8, [1000]) # output 1000 if the input value is equal to 8
-    run_program_test(memory, 9, [1001]) # output 1001 if the input value is greater than 8.
+    run_program_test(memory, 7, :any, [999]) # output 999 if the input value is below 8
+    run_program_test(memory, 8, :any, [1000]) # output 1000 if the input value is equal to 8
+    run_program_test(memory, 9, :any, [1001]) # output 1001 if the input value is greater than 8.
   end
 
   test "resolve level (second part)" do
@@ -93,26 +98,21 @@ defmodule Advent5Test do
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do
-    run_program_test(initial_memory, 42, expected_final_memory, [])
+    run_program_test(initial_memory, [], expected_final_memory, [])
   end
 
-  defp run_program_test_with_expected_output(initial_memory, expected_final_memory, expected_outputs) do
-    run_program_test(initial_memory, 42, expected_final_memory, expected_outputs)
+  defp run_program_test(initial_memory, inputs_stack, expected_final_memory, expected_outputs) when is_list(inputs_stack) do
+    { final_memory, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, inputs_stack, [])
+    if(expected_outputs != :any) do
+      assert outputs == expected_outputs
+    end
+    if(expected_final_memory != :any) do
+      assert final_memory == expected_final_memory
+    end
   end
 
-  defp run_program_test_with_input(initial_memory, input, expected_final_memory) do
-    run_program_test(initial_memory, input, expected_final_memory, [])
-  end
-
-  defp run_program_test(initial_memory, input, expected_outputs) do
-    { _, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, input, [])
-    assert outputs == expected_outputs
-  end
-
-  defp run_program_test(initial_memory, input, expected_final_memory, expected_outputs) do
-    { final_memory, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, input, [])
-    assert final_memory == expected_final_memory
-    assert outputs == expected_outputs
+  defp run_program_test(initial_memory, input_value, expected_final_memory, expected_outputs) do
+    run_program_test(initial_memory, [input_value], expected_final_memory, expected_outputs)
   end
 
 end

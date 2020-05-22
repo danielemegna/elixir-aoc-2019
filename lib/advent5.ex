@@ -90,17 +90,17 @@ defmodule Advent5 do
 
   def resolve_first_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, 1, [])
+    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, [1], [])
     output
   end
 
   def resolve_second_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, 5, [])
+    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, [5], [])
     output
   end
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, input_value, outputs_stack) do
+  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
     instruction = Instruction.build_from(
       Enum.at(memory, instruction_pointer),
       instruction_pointer
@@ -109,11 +109,11 @@ defmodule Advent5 do
     if(halt_program_instruction?(instruction)) do
       { memory, outputs_stack }
     else
-      { new_memory, new_instruction_pointer, new_outputs_stack } =
-        compute_instruction(memory, instruction, input_value, outputs_stack)
+      { new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack } =
+        compute_instruction(memory, instruction, inputs_stack, outputs_stack)
 
       run_memory_program_from_instruction(
-        new_memory, new_instruction_pointer, input_value, new_outputs_stack
+        new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack
       )
     end
   end
@@ -121,19 +121,19 @@ defmodule Advent5 do
   defp halt_program_instruction?(%{code: %{opcode: :halt}}), do: true
   defp halt_program_instruction?(_), do: false
 
-  defp compute_instruction(memory, %{code: %{opcode: :read}} = instruction, input_value, outputs_stack) do
+  defp compute_instruction(memory, %{code: %{opcode: :read}} = instruction, [next_input_value | inputs_rest], outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
-    new_memory = memory |> List.replace_at(first_parameter, input_value)
-    { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
+    new_memory = memory |> List.replace_at(first_parameter, next_input_value)
+    { new_memory, instruction.memory_pointer + instruction.length, inputs_rest, outputs_stack }
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: :write}} = instruction, _input_value, outputs_stack) do
+  defp compute_instruction(memory, %{code: %{opcode: :write}} = instruction, inputs_stack, outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     new_outputs_stack = outputs_stack ++ [first_parameter]
-    { memory, instruction.memory_pointer + instruction.length, new_outputs_stack }
+    { memory, instruction.memory_pointer + instruction.length, inputs_stack, new_outputs_stack }
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: opcode}} = instruction, _input_value, outputs_stack)
+  defp compute_instruction(memory, %{code: %{opcode: opcode}} = instruction, inputs_stack, outputs_stack)
     when opcode in [:jump_if_true, :jump_if_false]
   do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
@@ -147,10 +147,10 @@ defmodule Advent5 do
       else instruction.memory_pointer + instruction.length
       end
       
-    { memory, new_instruction_pointer, outputs_stack }
+    { memory, new_instruction_pointer, inputs_stack, outputs_stack }
   end
 
-  defp compute_instruction(memory, instruction, _input_value, outputs_stack) do
+  defp compute_instruction(memory, instruction, inputs_stack, outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)
     second_parameter = Instruction.second_parameter_from(instruction, memory)
     third_parameter = Instruction.third_parameter_from(instruction, memory)
@@ -162,7 +162,7 @@ defmodule Advent5 do
       :equals -> (if (first_parameter == second_parameter), do: 1, else: 0)
     end
     new_memory = memory |> List.replace_at(third_parameter, instruction_result)
-    { new_memory, instruction.memory_pointer + instruction.length, outputs_stack }
+    { new_memory, instruction.memory_pointer + instruction.length, inputs_stack, outputs_stack }
   end
 
   defp read_initial_memory_from_file do
