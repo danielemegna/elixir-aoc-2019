@@ -102,7 +102,7 @@ defmodule Advent5Test do
   end
 
   defp run_program_test(initial_memory, inputs_stack, expected_final_memory, expected_outputs) when is_list(inputs_stack) do
-    { final_memory, outputs } = Advent5.run_memory_program_from_instruction(initial_memory, 0, inputs_stack, [])
+    { final_memory, outputs } = Advent5.run_memory_program(initial_memory, inputs_stack)
     if(expected_outputs != :any) do
       assert outputs == expected_outputs
     end

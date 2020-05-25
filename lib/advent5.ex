@@ -90,17 +90,20 @@ defmodule Advent5 do
 
   def resolve_first_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, [1], [])
-    output
+    {_final_memory, outputs} = run_memory_program(memory, [1])
+    outputs
   end
 
   def resolve_second_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, output} = run_memory_program_from_instruction(memory, 0, [5], [])
-    output
+    {_final_memory, outputs} = run_memory_program(memory, [5])
+    outputs
   end
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
+  def run_memory_program(memory, inputs_stack), do:
+    run_memory_program_from_instruction(memory, 0, inputs_stack, []) 
+
+  defp run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
     instruction = Instruction.build_from(
       Enum.at(memory, instruction_pointer),
       instruction_pointer
