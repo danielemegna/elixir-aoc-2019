@@ -1,5 +1,9 @@
 defmodule Advent7 do
 
+  def resolve do
+    max_thruster_signal_for(read_initial_memory_from_file())
+  end
+
   def max_thruster_signal_for(memory) do
     get_permutations([0,1,2,3,4])
       |> Enum.map(fn(phase_settings_sequence) ->
@@ -26,8 +30,16 @@ defmodule Advent7 do
       rest = list -- [element]
       rest_permutations = get_permutations(rest)
       rest_permutations
-        |> Enum.map(fn(storter_permutation) -> [element | storter_permutation] end)
+        |> Enum.map(fn(storter_permutation) -> [element | storter_permutation] end) 
     end)
+  end
+
+  defp read_initial_memory_from_file do
+    File.stream!("advent7.txt")
+      |> Enum.at(0)
+      |> String.split(",")
+      |> Enum.map(&Integer.parse/1)
+      |> Enum.map(fn({n, _}) -> n end)
   end
 
 end
