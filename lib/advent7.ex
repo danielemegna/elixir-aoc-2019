@@ -14,7 +14,7 @@ defmodule Advent7 do
 
 
   defp run_amplifier_controller_software_with(memory, [phase_setting | rest_phase], input_signal) do
-    {_final_memory, outputs} = Advent5.run_memory_program(memory, [phase_setting, input_signal])
+    {_final_memory, _last_instruction, outputs} = Advent5.run_memory_program(memory, [phase_setting, input_signal])
     output_signal = Enum.at(outputs, 0)
 
     if(Enum.empty?(rest_phase)) do

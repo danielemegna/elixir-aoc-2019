@@ -90,13 +90,13 @@ defmodule Advent5 do
 
   def resolve_first_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, outputs} = run_memory_program(memory, [1])
+    {_final_memory, _last_instruction, outputs} = run_memory_program(memory, [1])
     outputs
   end
 
   def resolve_second_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, outputs} = run_memory_program(memory, [5])
+    {_final_memory, _last_instruction, outputs} = run_memory_program(memory, [5])
     outputs
   end
 
@@ -110,7 +110,7 @@ defmodule Advent5 do
     )
 
     if(halt_program_instruction?(instruction)) do
-      { memory, outputs_stack }
+      { memory, instruction, outputs_stack }
     else
       { new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack } =
         compute_instruction(memory, instruction, inputs_stack, outputs_stack)
