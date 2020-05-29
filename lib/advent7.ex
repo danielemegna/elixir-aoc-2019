@@ -7,98 +7,47 @@ defmodule Advent7 do
   def max_thruster_signal_for(memory) do
     get_permutations([0,1,2,3,4])
       |> Enum.map(fn(phase_settings_sequence) ->
-        run_amplifier_controller_software_with(memory, phase_settings_sequence, 0)
+        thruster_signal_with(memory, phase_settings_sequence)
       end)
       |> Enum.max
   end
 
   def resolve_second_part do
-    max_thruster_signal_FL_for(read_initial_memory_from_file())
+    max_thruster_signal_with_feedback_loop_for(read_initial_memory_from_file())
   end
 
-  def max_thruster_signal_FL_for(memory) do
+  def max_thruster_signal_with_feedback_loop_for(memory) do
     get_permutations([5,6,7,8,9])
       |> Enum.map(fn(phase_settings_sequence) ->
-        run_amplifier_controller_software_FL_with(memory, phase_settings_sequence)
+        thruster_signal_with(memory, phase_settings_sequence)
       end)
       |> Enum.max
   end
 
-  defp run_amplifier_controller_software_FL_with(memory, phase_settings_sequence) do
-    {final_memory1, last_instruction1, outputs} = Advent5.run_memory_program_from_instruction(
-      memory, 0, [Enum.at(phase_settings_sequence, 0), 0], []
-    )
-    {final_memory2, last_instruction2, outputs} = Advent5.run_memory_program_from_instruction(
-      memory, 0, [Enum.at(phase_settings_sequence, 1), Enum.at(outputs, 0)], []
-    )
-    {final_memory3, last_instruction3, outputs} = Advent5.run_memory_program_from_instruction(
-      memory, 0, [Enum.at(phase_settings_sequence, 2), Enum.at(outputs, 0)], []
-    )
-    {final_memory4, last_instruction4, outputs} = Advent5.run_memory_program_from_instruction(
-      memory, 0, [Enum.at(phase_settings_sequence, 3), Enum.at(outputs, 0)], []
-    )
-    {final_memory5, last_instruction5, outputs} = Advent5.run_memory_program_from_instruction(
-      memory, 0, [Enum.at(phase_settings_sequence, 4), Enum.at(outputs, 0)], []
-    )
-
-    amplifier_states = [
-      {final_memory1, last_instruction1.memory_pointer},
-      {final_memory2, last_instruction2.memory_pointer},
-      {final_memory3, last_instruction3.memory_pointer},
-      {final_memory4, last_instruction4.memory_pointer},
-      {final_memory5, last_instruction5.memory_pointer},
-    ]
-    run_amplifier_controller_software_FL(amplifier_states, Enum.at(outputs,0))
+  defp thruster_signal_with(memory, phase_settings_sequence) do
+    initial_amplifier_states = List.duplicate({memory, 0}, 5)
+    run_amplifier_software_with(initial_amplifier_states, phase_settings_sequence, 0, 0)
   end
 
-  defp run_amplifier_controller_software_FL(amplifier_states, input_signal) do
-    [
-      {final_memory1, last_instruction1_memory_pointer},
-      {final_memory2, last_instruction2_memory_pointer},
-      {final_memory3, last_instruction3_memory_pointer},
-      {final_memory4, last_instruction4_memory_pointer},
-      {final_memory5, last_instruction5_memory_pointer},
-    ] = amplifier_states
+  defp run_amplifier_software_with(amplifier_states, phase_settings_sequence_stack, amplifier_index, input_signal) do
+    {phase_setting, phase_settings_sequence_stack} = phase_settings_sequence_stack |> List.pop_at(0)
+    inputs = [phase_setting, input_signal] |> Enum.filter(&(&1 !== nil))
 
-    {final_memory1, last_instruction1, outputs} = Advent5.run_memory_program_from_instruction(
-      final_memory1, last_instruction1_memory_pointer, [input_signal], []
+    {memory, memory_pointer} = amplifier_states |> Enum.at(amplifier_index)
+    {new_memory, last_instruction, outputs} = Advent5.run_memory_program_from_instruction(
+      memory, memory_pointer, inputs, []
     )
-    {final_memory2, last_instruction2, outputs} = Advent5.run_memory_program_from_instruction(
-      final_memory2, last_instruction2_memory_pointer, [Enum.at(outputs, 0)], []
-    )
-    {final_memory3, last_instruction3, outputs} = Advent5.run_memory_program_from_instruction(
-      final_memory3, last_instruction3_memory_pointer, [Enum.at(outputs, 0)], []
-    )
-    {final_memory4, last_instruction4, outputs} = Advent5.run_memory_program_from_instruction(
-      final_memory4, last_instruction4_memory_pointer, [Enum.at(outputs, 0)], []
-    )
-    {final_memory5, last_instruction5, outputs} = Advent5.run_memory_program_from_instruction(
-      final_memory5, last_instruction5_memory_pointer, [Enum.at(outputs, 0)], []
-    )
-
-    if(last_instruction5.code.opcode === :read) do
-      amplifier_states = [
-        {final_memory1, last_instruction1.memory_pointer},
-        {final_memory2, last_instruction2.memory_pointer},
-        {final_memory3, last_instruction3.memory_pointer},
-        {final_memory4, last_instruction4.memory_pointer},
-        {final_memory5, last_instruction5.memory_pointer},
-      ]
-      run_amplifier_controller_software_FL(amplifier_states, Enum.at(outputs,0))
-    else
-      Enum.at(outputs,0)
-    end
-  end
-
-  defp run_amplifier_controller_software_with(memory, [phase_setting | rest_phase], input_signal) do
-    {_final_memory, _last_instruction, outputs} = Advent5.run_memory_program(memory, [phase_setting, input_signal])
     output_signal = Enum.at(outputs, 0)
 
-    if(Enum.empty?(rest_phase)) do
+    if(last_instruction.code.opcode === :halt && amplifier_index === 4) do
       output_signal
     else
-      run_amplifier_controller_software_with(memory, rest_phase, output_signal)
+      amplifier_states = amplifier_states
+        |> List.replace_at(amplifier_index, {new_memory, last_instruction.memory_pointer})
+
+      run_amplifier_software_with(amplifier_states, phase_settings_sequence_stack, rem(amplifier_index+1, 5), output_signal)
     end
+
   end
 
   defp get_permutations([single]), do: [[single]]
