@@ -109,7 +109,7 @@ defmodule Advent5 do
       instruction_pointer
     )
 
-    if(halt_program_instruction?(instruction)) do
+    if(halt_program_instruction?(instruction, inputs_stack)) do
       { memory, instruction, outputs_stack }
     else
       { new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack } =
@@ -121,8 +121,9 @@ defmodule Advent5 do
     end
   end
 
-  defp halt_program_instruction?(%{code: %{opcode: :halt}}), do: true
-  defp halt_program_instruction?(_), do: false
+  defp halt_program_instruction?(%{code: %{opcode: :halt}}, _), do: true
+  defp halt_program_instruction?(%{code: %{opcode: :read}}, []), do: true
+  defp halt_program_instruction?(_, _), do: false
 
   defp compute_instruction(memory, %{code: %{opcode: :read}} = instruction, [next_input_value | inputs_rest], outputs_stack) do
     first_parameter = Instruction.first_parameter_from(instruction, memory)

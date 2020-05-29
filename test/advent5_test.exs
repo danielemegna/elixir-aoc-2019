@@ -97,6 +97,22 @@ defmodule Advent5Test do
     assert result == [773660]
   end
 
+  test "halts on halt operation (99)" do
+    memory = [3,3,1101,-1,4,5,4,5,99,:ignored,:ignored]
+    { final_memory, last_instruction, outputs } = Advent5.run_memory_program(memory, [42])
+    assert final_memory == [3,3,1101,42,4,46,4,5,99,:ignored,:ignored]
+    assert outputs == [46]
+    assert last_instruction.code.opcode == :halt
+  end
+
+  test "halts on read operation (3) without enough input provided" do
+    memory = [3,3,1101,-1,4,5,4,5,3,:ignored,:ignored]
+    { final_memory, last_instruction, outputs } = Advent5.run_memory_program(memory, [42])
+    assert final_memory == [3,3,1101,42,4,46,4,5,3,:ignored,:ignored]
+    assert outputs == [46]
+    assert last_instruction.code.opcode == :read
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end
