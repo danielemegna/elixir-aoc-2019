@@ -103,7 +103,7 @@ defmodule Advent5 do
   def run_memory_program(memory, inputs_stack), do:
     run_memory_program_from_instruction(memory, 0, inputs_stack, []) 
 
-  defp run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
+  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
     instruction = Instruction.build_from(
       Enum.at(memory, instruction_pointer),
       instruction_pointer
