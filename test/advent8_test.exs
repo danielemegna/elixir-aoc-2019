@@ -24,4 +24,43 @@ defmodule Advent8Test do
   test "resolve level" do
     assert 1330 === Advent8.resolve
   end
+
+  test "merge_image_layers test" do
+    source_image = %Image{
+      width: 2,
+      height: 2,
+      layers: [
+        %Layer{rows: [
+          [0,2],
+          [2,2]
+        ]},
+        %Layer{rows: [
+          [1,1],
+          [2,2]
+        ]},
+        %Layer{rows: [
+          [2,2],
+          [1,2]
+        ]},
+        %Layer{rows: [
+          [0,0],
+          [0,0]
+        ]}
+      ]
+    }
+
+    actual = Advent8.merge_image_layers(source_image)
+
+    expected = %Image{
+      width: 2,
+      height: 2,
+      layers: [
+        %Layer{rows: [
+          [0,1],
+          [1,0]
+        ]}
+      ]
+    }
+    assert actual === expected
+  end
 end

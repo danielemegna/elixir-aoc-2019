@@ -33,6 +33,28 @@ defmodule Advent8 do
     %Image{ width: wide, height: tail, layers: layers }
   end
 
+  def merge_image_layers(source) do
+    merged_rows = source.layers
+      |> Enum.map(&(&1.rows))
+      |> Enum.zip
+      |> Enum.map(fn(zipped_rows) ->
+        zipped_rows |> Tuple.to_list |> Enum.zip
+      end)
+      |> Enum.map(fn(row_with_zipped_digits) ->
+        Enum.map(row_with_zipped_digits, fn(digits_on_same_position) ->
+          digits_on_same_position
+            |> Tuple.to_list
+            |> Enum.find(2, &(&1 !== 2))
+        end)
+      end)
+
+    %Image{
+      width: source.width,
+      height: source.height,
+      layers: [%Layer{rows: merged_rows}]
+    }
+  end
+
   defp read_image_digits_from_file do
     File.stream!("advent8.txt")
       |> Enum.at(0)
