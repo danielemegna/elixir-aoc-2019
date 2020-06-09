@@ -1,5 +1,5 @@
 defmodule Image do
-  @enforce_keys [:layers]
+  @enforce_keys [:width, :height, :layers]
   defstruct @enforce_keys
 end
 defmodule Layer do
@@ -30,7 +30,7 @@ defmodule Advent8 do
       |> Enum.map(fn(layer_digits) -> 
         %Layer{ rows: Enum.chunk_every(layer_digits, wide) } 
       end)
-    %Image{ layers: layers }
+    %Image{ width: wide, height: tail, layers: layers }
   end
 
   defp read_image_digits_from_file do

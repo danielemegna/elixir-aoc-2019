@@ -4,16 +4,20 @@ defmodule Advent8Test do
   test "image_from test" do
     actual = Advent8.image_from([1,2,3,4,5,6,7,8,9,0,1,2], 3, 2)
 
-    expected = %Image{layers: [
-      %Layer{rows: [
-        [1,2,3],
-        [4,5,6]
-      ]},
-      %Layer{rows: [
-        [7,8,9],
-        [0,1,2]
-      ]}
-    ]}
+    expected = %Image{
+      width: 3,
+      height: 2,
+      layers: [
+        %Layer{rows: [
+          [1,2,3],
+          [4,5,6]
+        ]},
+        %Layer{rows: [
+          [7,8,9],
+          [0,1,2]
+        ]}
+      ]
+    }
     assert actual === expected
   end
 
