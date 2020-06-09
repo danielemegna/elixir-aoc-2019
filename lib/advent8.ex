@@ -9,7 +9,7 @@ end
 
 defmodule Advent8 do
 
-  def resolve do
+  def resolve_first_part do
     image = image_from(read_image_digits_from_file(), 25, 6)
 
     fewest_zeros_layer = image.layers
@@ -22,6 +22,30 @@ defmodule Advent8 do
     one_digit_count = layer_digits |> Enum.filter(&(&1 === 1)) |> Enum.count
     two_digit_count = layer_digits |> Enum.filter(&(&1 === 2)) |> Enum.count
     one_digit_count * two_digit_count
+  end
+
+  def resolve_second_part do
+    image = image_from(read_image_digits_from_file(), 25, 6)
+    merged = merge_image_layers(image)
+    render(merged)
+  end
+
+  def render(image) do
+    black_char = " "
+    white_char = "*"
+    image.layers
+      |> Enum.at(0)
+      |> Map.get(:rows)
+      |> Enum.map(fn(row) ->
+        row |> Enum.map(fn(x) ->
+          case(x) do
+            0 -> black_char
+            1 -> white_char
+          end
+        end)
+        |> Enum.join
+      end)
+      |> Enum.join("\n")
   end
 
   def image_from(digits, wide, tail) do

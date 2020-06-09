@@ -21,8 +21,8 @@ defmodule Advent8Test do
     assert actual === expected
   end
 
-  test "resolve level" do
-    assert 1330 === Advent8.resolve
+  test "resolve level (first part)" do
+    assert 1330 === Advent8.resolve_first_part
   end
 
   test "merge_image_layers test" do
@@ -62,5 +62,15 @@ defmodule Advent8Test do
       ]
     }
     assert actual === expected
+  end
+
+  test "resolve level (second part)" do
+    expected = "****  **  *  * **** **** \n"<>
+               "*    *  * *  * *    *    \n"<>
+               "***  *  * **** ***  ***  \n"<>
+               "*    **** *  * *    *    \n"<>
+               "*    *  * *  * *    *    \n"<>
+               "*    *  * *  * **** *    "
+    assert expected === Advent8.resolve_second_part
   end
 end
