@@ -27,7 +27,7 @@ defmodule Advent7 do
 
     {memory, memory_pointer} = amplifier_states |> Enum.at(amplifier_index)
     {new_memory, last_instruction, outputs} =
-      Advent5.run_memory_program_from_instruction(memory, memory_pointer, inputs, [])
+      Intcode.Machine.run_memory_program_from_instruction(memory, memory_pointer, inputs, [])
 
     output_signal = Enum.at(outputs, 0)
 
