@@ -20,7 +20,7 @@ defmodule Advent2Test do
   end
 
   defp run_program_test(initial_memory, expected_final_memory) do
-    final_memory = Advent2.run_memory_program_from_instruction(initial_memory, 0)
+    { final_memory, _, _ } = Advent5.run_memory_program_from_instruction(initial_memory, 0, [], [])
     assert final_memory == expected_final_memory
   end
 
