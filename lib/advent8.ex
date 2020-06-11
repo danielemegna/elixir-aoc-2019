@@ -32,7 +32,7 @@ defmodule Advent8 do
 
   def render(image) do
     black_char = " "
-    white_char = "*"
+    white_char = "█"
     image.layers
       |> Enum.at(0)
       |> Map.get(:rows)

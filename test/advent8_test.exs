@@ -65,12 +65,12 @@ defmodule Advent8Test do
   end
 
   test "resolve level (second part)" do
-    expected = "****  **  *  * **** **** \n"<>
-               "*    *  * *  * *    *    \n"<>
-               "***  *  * **** ***  ***  \n"<>
-               "*    **** *  * *    *    \n"<>
-               "*    *  * *  * *    *    \n"<>
-               "*    *  * *  * **** *    "
+    expected = "████  ██  █  █ ████ ████ \n"<>
+               "█    █  █ █  █ █    █    \n"<>
+               "███  █  █ ████ ███  ███  \n"<>
+               "█    ████ █  █ █    █    \n"<>
+               "█    █  █ █  █ █    █    \n"<>
+               "█    █  █ █  █ ████ █    "
     assert expected === Advent8.resolve_second_part
   end
 end
