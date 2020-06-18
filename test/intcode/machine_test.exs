@@ -103,6 +103,11 @@ defmodule Intcode.MachineTest do
     assert last_instruction.code.opcode == :read
   end
 
+  test "handle large numbers" do
+    run_program_test([1102,34915192,34915192,7,4,7,99,0], [], :any, [1219070632396864])
+    run_program_test([104,1125899906842624,99], [], :any, [1125899906842624])
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end
