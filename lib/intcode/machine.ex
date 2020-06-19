@@ -2,12 +2,16 @@ defmodule Intcode.Machine do
   alias Intcode.Instruction
   
   def run_memory_program(memory, inputs_stack), do:
-    run_memory_program_from_instruction(memory, 0, inputs_stack, []) 
+    run_memory_program_from_instruction(memory, 0, 0, inputs_stack, []) 
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack) do
+  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack), do:
+    run_memory_program_from_instruction(memory, instruction_pointer, 0, inputs_stack, outputs_stack)
+
+  def run_memory_program_from_instruction(memory, instruction_pointer, relative_base, inputs_stack, outputs_stack) do
     instruction = Instruction.build_from(
       Enum.at(memory, instruction_pointer),
-      instruction_pointer
+      instruction_pointer,
+      relative_base
     )
 
     if(halt_program_instruction?(instruction, inputs_stack)) do
@@ -17,7 +21,7 @@ defmodule Intcode.Machine do
         compute_instruction(memory, instruction, inputs_stack, outputs_stack)
 
       run_memory_program_from_instruction(
-        new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack
+        new_memory, new_instruction_pointer, relative_base, new_inputs_stack, new_outputs_stack
       )
     end
   end
