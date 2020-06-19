@@ -35,6 +35,7 @@ defmodule Intcode.InstructionCode do
     case (parameter_mode) do
       0 -> :position
       1 -> :immediate
+      2 -> :relative
     end
   end
 

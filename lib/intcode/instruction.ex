@@ -39,10 +39,11 @@ defmodule Intcode.Instruction do
     end
   end
 
-  defp get_parameter_for(parameter_mode, memory, memory_pointer, memory_offset) do
+  defp get_parameter_for(parameter_mode, memory, memory_pointer, parameter_offset) do
     case(parameter_mode) do
-      :immediate -> Enum.at(memory, memory_pointer + memory_offset)
-      :position -> Enum.at(memory, Enum.at(memory, memory_pointer + memory_offset))
+      :immediate -> Enum.at(memory, memory_pointer + parameter_offset)
+      :position -> Enum.at(memory, Enum.at(memory, memory_pointer + parameter_offset))
+      :relative -> Enum.at(memory, Enum.at(memory, memory_pointer + parameter_offset))
     end
   end
 

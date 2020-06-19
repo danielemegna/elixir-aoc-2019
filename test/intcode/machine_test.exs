@@ -108,6 +108,11 @@ defmodule Intcode.MachineTest do
     run_program_test([104,1125899906842624,99], [], :any, [1125899906842624])
   end
 
+  test "introduce relative parameter mode (2)" do
+    run_program_test([22201,1,0,0,99], [22202,1,0,0,99]) # (1 + 22201 = 22202)
+    run_program_test([22202,3,1,3,99], [22202,3,1,9,99]) # (3 * 3 = 9)
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end
