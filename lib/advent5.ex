@@ -2,13 +2,13 @@ defmodule Advent5 do
 
   def resolve_first_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_memory_program(memory, [1])
+    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_with(Intcode.MachineState.new(memory, [1]))
     outputs
   end
 
   def resolve_second_part do
     memory = read_initial_memory_from_file()
-    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_memory_program(memory, [5])
+    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_with(Intcode.MachineState.new(memory, [5]))
     outputs
   end
 

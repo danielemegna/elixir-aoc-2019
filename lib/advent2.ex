@@ -26,7 +26,8 @@ defmodule Advent2 do
   defp put_inputs_in_memory__run__and_take_result(memory, noun, verb) do
     memory
       |> put_inputs_in_memory(noun, verb)
-      |> Intcode.Machine.run_memory_program_from_instruction(0, [], [])
+      |> Intcode.MachineState.new()
+      |> Intcode.Machine.run_with()
       |> elem(0)
       |> Enum.at(0)
   end

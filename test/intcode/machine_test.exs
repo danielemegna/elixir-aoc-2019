@@ -1,5 +1,7 @@
 defmodule Intcode.MachineTest do
   use ExUnit.Case
+  alias Intcode.Machine
+  alias Intcode.MachineState
 
   test "basic operations for Advent2 requirements" do
     run_program_test([1,0,0,0,99], [2,0,0,0,99]) # (1 + 1 = 2)
@@ -89,7 +91,7 @@ defmodule Intcode.MachineTest do
 
   test "halts on halt operation (99)" do
     memory = [3,3,1101,-1,4,5,4,5,99,:ignored,:ignored]
-    { final_memory, last_instruction, outputs } = Intcode.Machine.run_memory_program(memory, [42])
+    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(memory, [42]))
     assert final_memory == [3,3,1101,42,4,46,4,5,99,:ignored,:ignored]
     assert outputs == [46]
     assert last_instruction.code.opcode == :halt
@@ -97,7 +99,7 @@ defmodule Intcode.MachineTest do
 
   test "halts on read operation (3) without enough input provided" do
     memory = [3,3,1101,-1,4,5,4,5,3,:ignored,:ignored]
-    { final_memory, last_instruction, outputs } = Intcode.Machine.run_memory_program(memory, [42])
+    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(memory, [42]))
     assert final_memory == [3,3,1101,42,4,46,4,5,3,:ignored,:ignored]
     assert outputs == [46]
     assert last_instruction.code.opcode == :read
@@ -118,7 +120,7 @@ defmodule Intcode.MachineTest do
   end
 
   defp run_program_test(initial_memory, inputs_stack, expected_final_memory, expected_outputs) when is_list(inputs_stack) do
-    { final_memory, last_instruction, outputs } = Intcode.Machine.run_memory_program(initial_memory, inputs_stack)
+    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(initial_memory, inputs_stack))
     if(expected_outputs != :any) do
       assert outputs == expected_outputs
     end

@@ -1,14 +1,7 @@
 defmodule Intcode.Machine do
   alias Intcode.Instruction
-  alias Intcode.MachineState
   
-  def run_memory_program(memory, inputs_stack), do:
-    run_memory_program_from_instruction(MachineState.new(memory, 0, 0, inputs_stack, []))
-
-  def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack), do:
-    run_memory_program_from_instruction(MachineState.new(memory, instruction_pointer, 0, inputs_stack, outputs_stack))
-
-  defp run_memory_program_from_instruction(machine_state) do
+  def run_with(machine_state) do
     instruction = Instruction.build_from(
       Enum.at(machine_state.memory, machine_state.instruction_pointer),
       machine_state.instruction_pointer,
@@ -19,7 +12,7 @@ defmodule Intcode.Machine do
       { machine_state.memory, instruction, machine_state.outputs_stack }
     else
       new_machine_state = compute_instruction(instruction, machine_state)
-      run_memory_program_from_instruction(new_machine_state)
+      run_with(new_machine_state)
     end
   end
 

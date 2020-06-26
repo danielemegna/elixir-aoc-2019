@@ -26,8 +26,8 @@ defmodule Advent7 do
     inputs = [phase_setting, input_signal] |> Enum.filter(&(&1 !== nil))
 
     {memory, memory_pointer} = amplifier_states |> Enum.at(amplifier_index)
-    {new_memory, last_instruction, outputs} =
-      Intcode.Machine.run_memory_program_from_instruction(memory, memory_pointer, inputs, [])
+    machine_state = Intcode.MachineState.new(memory, memory_pointer, inputs)
+    {new_memory, last_instruction, outputs} = Intcode.Machine.run_with(machine_state)
 
     output_signal = Enum.at(outputs, 0)
 
