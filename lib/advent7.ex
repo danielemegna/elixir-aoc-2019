@@ -27,15 +27,15 @@ defmodule Advent7 do
 
     {memory, memory_pointer} = amplifier_states |> Enum.at(amplifier_index)
     machine_state = Intcode.MachineState.new(memory, memory_pointer, inputs)
-    {new_memory, last_instruction, outputs} = Intcode.Machine.run_with(machine_state)
+    {machine_state, last_instruction} = Intcode.Machine.run_with(machine_state)
 
-    output_signal = Enum.at(outputs, 0)
+    output_signal = Enum.at(machine_state.outputs_stack, 0)
 
     if(last_instruction.code.opcode === :halt && amplifier_index === 4) do
       output_signal
     else
       amplifier_states = amplifier_states
-        |> List.replace_at(amplifier_index, {new_memory, last_instruction.memory_pointer})
+        |> List.replace_at(amplifier_index, {machine_state.memory, last_instruction.memory_pointer})
 
       next_amplifier_index = rem(amplifier_index+1, 5)
       run_amplifier_software_with(amplifier_states, phase_settings_sequence_stack, next_amplifier_index, output_signal)

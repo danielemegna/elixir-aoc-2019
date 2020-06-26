@@ -29,6 +29,7 @@ defmodule Advent2 do
       |> Intcode.MachineState.new()
       |> Intcode.Machine.run_with()
       |> elem(0)
+      |> Map.get(:memory)
       |> Enum.at(0)
   end
 

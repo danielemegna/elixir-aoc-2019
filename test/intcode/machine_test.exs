@@ -91,17 +91,17 @@ defmodule Intcode.MachineTest do
 
   test "halts on halt operation (99)" do
     memory = [3,3,1101,-1,4,5,4,5,99,:ignored,:ignored]
-    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(memory, [42]))
-    assert final_memory == [3,3,1101,42,4,46,4,5,99,:ignored,:ignored]
-    assert outputs == [46]
+    { machine_state, last_instruction } = Machine.run_with(MachineState.new(memory, [42]))
+    assert machine_state.memory == [3,3,1101,42,4,46,4,5,99,:ignored,:ignored]
+    assert machine_state.outputs_stack == [46]
     assert last_instruction.code.opcode == :halt
   end
 
   test "halts on read operation (3) without enough input provided" do
     memory = [3,3,1101,-1,4,5,4,5,3,:ignored,:ignored]
-    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(memory, [42]))
-    assert final_memory == [3,3,1101,42,4,46,4,5,3,:ignored,:ignored]
-    assert outputs == [46]
+    { machine_state, last_instruction } = Machine.run_with(MachineState.new(memory, [42]))
+    assert machine_state.memory == [3,3,1101,42,4,46,4,5,3,:ignored,:ignored]
+    assert machine_state.outputs_stack == [46]
     assert last_instruction.code.opcode == :read
   end
 
@@ -120,12 +120,12 @@ defmodule Intcode.MachineTest do
   end
 
   defp run_program_test(initial_memory, inputs_stack, expected_final_memory, expected_outputs) when is_list(inputs_stack) do
-    { final_memory, last_instruction, outputs } = Machine.run_with(MachineState.new(initial_memory, inputs_stack))
+    { machine_state, last_instruction } = Machine.run_with(MachineState.new(initial_memory, inputs_stack))
     if(expected_outputs != :any) do
-      assert outputs == expected_outputs
+      assert machine_state.outputs_stack == expected_outputs
     end
     if(expected_final_memory != :any) do
-      assert final_memory == expected_final_memory
+      assert machine_state.memory == expected_final_memory
     end
     assert last_instruction.code.opcode == :halt
   end

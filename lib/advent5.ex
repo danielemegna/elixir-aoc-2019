@@ -1,15 +1,19 @@
 defmodule Advent5 do
 
   def resolve_first_part do
-    memory = read_initial_memory_from_file()
-    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_with(Intcode.MachineState.new(memory, [1]))
-    outputs
+    read_initial_memory_from_file()
+      |> Intcode.MachineState.new([1])
+      |> Intcode.Machine.run_with()
+      |> elem(0)
+      |> Map.get(:outputs_stack)
   end
 
   def resolve_second_part do
-    memory = read_initial_memory_from_file()
-    {_final_memory, _last_instruction, outputs} = Intcode.Machine.run_with(Intcode.MachineState.new(memory, [5]))
-    outputs
+    read_initial_memory_from_file()
+      |> Intcode.MachineState.new([5])
+      |> Intcode.Machine.run_with()
+      |> elem(0)
+      |> Map.get(:outputs_stack)
   end
 
   defp read_initial_memory_from_file do

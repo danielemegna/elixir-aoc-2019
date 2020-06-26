@@ -9,7 +9,7 @@ defmodule Intcode.Machine do
     )
 
     if(halt_program_instruction?(instruction, machine_state.inputs_stack)) do
-      { machine_state.memory, instruction, machine_state.outputs_stack }
+      { machine_state, instruction }
     else
       new_machine_state = compute_instruction(instruction, machine_state)
       run_with(new_machine_state)
