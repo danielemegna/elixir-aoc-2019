@@ -1,28 +1,25 @@
 defmodule Intcode.Machine do
   alias Intcode.Instruction
+  alias Intcode.MachineState
   
   def run_memory_program(memory, inputs_stack), do:
-    run_memory_program_from_instruction(memory, 0, 0, inputs_stack, []) 
+    run_memory_program_from_instruction(MachineState.new(memory, 0, 0, inputs_stack, []))
 
   def run_memory_program_from_instruction(memory, instruction_pointer, inputs_stack, outputs_stack), do:
-    run_memory_program_from_instruction(memory, instruction_pointer, 0, inputs_stack, outputs_stack)
+    run_memory_program_from_instruction(MachineState.new(memory, instruction_pointer, 0, inputs_stack, outputs_stack))
 
-  def run_memory_program_from_instruction(memory, instruction_pointer, relative_base, inputs_stack, outputs_stack) do
+  defp run_memory_program_from_instruction(machine_state) do
     instruction = Instruction.build_from(
-      Enum.at(memory, instruction_pointer),
-      instruction_pointer,
-      relative_base
+      Enum.at(machine_state.memory, machine_state.instruction_pointer),
+      machine_state.instruction_pointer,
+      machine_state.relative_base
     )
 
-    if(halt_program_instruction?(instruction, inputs_stack)) do
-      { memory, instruction, outputs_stack }
+    if(halt_program_instruction?(instruction, machine_state.inputs_stack)) do
+      { machine_state.memory, instruction, machine_state.outputs_stack }
     else
-      { new_memory, new_instruction_pointer, new_inputs_stack, new_outputs_stack } =
-        compute_instruction(memory, instruction, inputs_stack, outputs_stack)
-
-      run_memory_program_from_instruction(
-        new_memory, new_instruction_pointer, relative_base, new_inputs_stack, new_outputs_stack
-      )
+      new_machine_state = compute_instruction(instruction, machine_state)
+      run_memory_program_from_instruction(new_machine_state)
     end
   end
 
@@ -30,39 +27,40 @@ defmodule Intcode.Machine do
   defp halt_program_instruction?(%{code: %{opcode: :read}}, []), do: true
   defp halt_program_instruction?(_, _), do: false
 
-  defp compute_instruction(memory, %{code: %{opcode: :read}} = instruction, [next_input_value | inputs_rest], outputs_stack) do
-    first_parameter = Instruction.first_parameter_from(instruction, memory)
-    new_memory = memory |> List.replace_at(first_parameter, next_input_value)
-    { new_memory, instruction.memory_pointer + instruction.length, inputs_rest, outputs_stack }
+  defp compute_instruction(%{code: %{opcode: :read}} = instruction, machine_state) do
+    [next_input_value | inputs_rest ] = machine_state.inputs_stack
+    first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
+    new_memory = machine_state.memory |> List.replace_at(first_parameter, next_input_value)
+    %{machine_state | memory: new_memory, instruction_pointer: new_instruction_pointer(instruction), inputs_stack: inputs_rest}
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: :write}} = instruction, inputs_stack, outputs_stack) do
-    first_parameter = Instruction.first_parameter_from(instruction, memory)
-    new_outputs_stack = outputs_stack ++ [first_parameter]
-    { memory, instruction.memory_pointer + instruction.length, inputs_stack, new_outputs_stack }
+  defp compute_instruction(%{code: %{opcode: :write}} = instruction, machine_state) do
+    first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
+    new_outputs_stack = machine_state.outputs_stack ++ [first_parameter]
+    %{machine_state | instruction_pointer: new_instruction_pointer(instruction), outputs_stack: new_outputs_stack}
   end
 
-  defp compute_instruction(memory, %{code: %{opcode: opcode}} = instruction, inputs_stack, outputs_stack)
+  defp compute_instruction(%{code: %{opcode: opcode}} = instruction, machine_state)
     when opcode in [:jump_if_true, :jump_if_false]
   do
-    first_parameter = Instruction.first_parameter_from(instruction, memory)
-    second_parameter = Instruction.second_parameter_from(instruction, memory)
+    first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
+    second_parameter = Instruction.second_parameter_from(instruction, machine_state.memory)
     should_jump = case(opcode) do
       :jump_if_true -> first_parameter != 0
       :jump_if_false -> first_parameter == 0
     end
     new_instruction_pointer =
       if(should_jump) do second_parameter
-      else instruction.memory_pointer + instruction.length
+      else new_instruction_pointer(instruction)
       end
       
-    { memory, new_instruction_pointer, inputs_stack, outputs_stack }
+    %{machine_state | instruction_pointer: new_instruction_pointer}
   end
 
-  defp compute_instruction(memory, instruction, inputs_stack, outputs_stack) do
-    first_parameter = Instruction.first_parameter_from(instruction, memory)
-    second_parameter = Instruction.second_parameter_from(instruction, memory)
-    third_parameter = Instruction.third_parameter_from(instruction, memory)
+  defp compute_instruction(instruction, machine_state) do
+    first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
+    second_parameter = Instruction.second_parameter_from(instruction, machine_state.memory)
+    third_parameter = Instruction.third_parameter_from(instruction, machine_state.memory)
 
     instruction_result = case(instruction.code.opcode) do
       :add -> first_parameter + second_parameter
@@ -70,8 +68,10 @@ defmodule Intcode.Machine do
       :less_than -> (if (first_parameter < second_parameter), do: 1, else: 0)
       :equals -> (if (first_parameter == second_parameter), do: 1, else: 0)
     end
-    new_memory = memory |> List.replace_at(third_parameter, instruction_result)
-    { new_memory, instruction.memory_pointer + instruction.length, inputs_stack, outputs_stack }
+    new_memory = machine_state.memory |> List.replace_at(third_parameter, instruction_result)
+    %{machine_state | memory: new_memory, instruction_pointer: new_instruction_pointer(instruction)}
   end
+
+  defp new_instruction_pointer(instruction), do: instruction.memory_pointer + instruction.length
 
 end
