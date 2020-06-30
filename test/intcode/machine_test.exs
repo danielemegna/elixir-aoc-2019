@@ -136,6 +136,11 @@ defmodule Intcode.MachineTest do
     run_program_test([1,0,0,10,99], [1,0,0,10,99,0,0,0,0,0,2]) # (1 + 1 = 2)
   end
 
+  test "quine program (produce himself)" do
+    memory = [109,1,204,-1,1001,100,1,100,1008,100,16,101,1006,101,0,99]
+    run_program_test(memory, [], :any, memory)
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end
