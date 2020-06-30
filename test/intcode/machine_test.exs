@@ -127,6 +127,10 @@ defmodule Intcode.MachineTest do
     assert machine_state.relative_base == 1 + 42 - 40 + 19
   end
 
+  test "memory beyond the initial program has value 0" do
+    run_program_test([1,0,42,3,99], [1,0,42,1,99]) # (1 + 0 = 1)
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end

@@ -68,6 +68,20 @@ defmodule Intcode.InstructionTest do
     assert 3 == Instruction.third_parameter_from(instruction, memory)
   end
 
+  test "get parameter beyond the memory has value 0" do
+    memory = [1,5,42,19,99]
+    instruction = %Instruction{
+      code: instruction_code_with(:add,:position,:position,:position),
+      memory_pointer: 0,
+      relative_base: 0,
+      length: 4
+    }
+
+    assert 0 == Instruction.first_parameter_from(instruction, memory)
+    assert 0 == Instruction.second_parameter_from(instruction, memory)
+    assert 19 == Instruction.third_parameter_from(instruction, memory)
+  end
+
   defp instruction_code_with(opcode, first, second, third) do
     %Intcode.InstructionCode{
       opcode: opcode,

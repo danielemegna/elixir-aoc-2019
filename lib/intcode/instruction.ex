@@ -37,9 +37,9 @@ defmodule Intcode.Instruction do
   defp get_parameter_value_for(instruction, memory, parameter_offset) do
     parameter_mode = get_parameter_mode_for(instruction, parameter_offset)
     case(parameter_mode) do
-      :immediate -> Enum.at(memory, instruction.memory_pointer + parameter_offset)
-      :position -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + parameter_offset))
-      :relative -> Enum.at(memory, Enum.at(memory, instruction.memory_pointer + parameter_offset) + instruction.relative_base)
+      :immediate -> memory_at(memory, instruction.memory_pointer + parameter_offset)
+      :position -> memory_at(memory, memory_at(memory, instruction.memory_pointer + parameter_offset))
+      :relative -> memory_at(memory, memory_at(memory, instruction.memory_pointer + parameter_offset) + instruction.relative_base)
     end
   end
 
@@ -47,13 +47,15 @@ defmodule Intcode.Instruction do
   defp get_address_where_write_for(instruction, memory, parameter_offset) do
     parameter_mode = get_parameter_mode_for(instruction, parameter_offset)
     case(parameter_mode) do
-      :relative -> Enum.at(memory, instruction.memory_pointer + parameter_offset) + instruction.relative_base
-      _ -> Enum.at(memory, instruction.memory_pointer + parameter_offset)
+      :relative -> memory_at(memory, instruction.memory_pointer + parameter_offset) + instruction.relative_base
+      _ -> memory_at(memory, instruction.memory_pointer + parameter_offset)
     end
   end
 
   defp get_parameter_mode_for(instruction, 1), do: instruction.code.first_parameter_mode
   defp get_parameter_mode_for(instruction, 2), do: instruction.code.second_parameter_mode
   defp get_parameter_mode_for(instruction, 3), do: instruction.code.third_parameter_mode
+
+  defp memory_at(memory, address), do: Enum.at(memory, address, 0)
 
 end
