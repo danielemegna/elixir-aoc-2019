@@ -1,8 +1,16 @@
 defmodule Advent9 do
 
-  def resolve do
+  def resolve_first_part do
     read_initial_memory_from_file()
       |> Intcode.MachineState.new([1])
+      |> Intcode.Machine.run_with()
+      |> elem(0)
+      |> Map.get(:outputs_stack)
+  end
+
+  def resolve_second_part do
+    read_initial_memory_from_file()
+      |> Intcode.MachineState.new([2])
       |> Intcode.Machine.run_with()
       |> elem(0)
       |> Map.get(:outputs_stack)
