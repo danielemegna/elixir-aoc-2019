@@ -33,6 +33,11 @@ defmodule Intcode.Machine do
     %{machine_state | instruction_pointer: new_instruction_pointer(instruction), outputs_stack: new_outputs_stack}
   end
 
+  defp compute_instruction(%{code: %{opcode: :adj_relative_base}} = instruction, machine_state) do
+    first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
+    %{machine_state | instruction_pointer: new_instruction_pointer(instruction), relative_base: machine_state.relative_base + first_parameter}
+  end
+
   defp compute_instruction(%{code: %{opcode: opcode}} = instruction, machine_state)
     when opcode in [:jump_if_true, :jump_if_false]
   do

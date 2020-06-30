@@ -115,6 +115,18 @@ defmodule Intcode.MachineTest do
     run_program_test([22202,3,1,3,99], [22202,3,1,9,99]) # (3 * 3 = 9)
   end
 
+  test "introduce adjust relative base operation (9)" do
+    machine_state = MachineState.new([9, 1, 99])
+    { machine_state, _} = Machine.run_with(machine_state)
+    assert machine_state.relative_base == 1
+    { machine_state, _} = Machine.run_with(%{machine_state | memory: [109, 42, 99], instruction_pointer: 0})
+    assert machine_state.relative_base == 1 + 42
+    { machine_state, _} = Machine.run_with(%{machine_state | memory: [9, 3, 99, -40], instruction_pointer: 0})
+    assert machine_state.relative_base == 1 + 42 - 40
+    { machine_state, _} = Machine.run_with(%{machine_state | memory: [209, 1, 99, -1, 19], instruction_pointer: 0})
+    assert machine_state.relative_base == 1 + 42 - 40 + 19
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end

@@ -30,7 +30,7 @@ defmodule Intcode.Instruction do
     get_parameter_value_for(instruction, memory, 3)
 
   defp instruction_length_for(opcode) when opcode in [:add, :mult, :less_than, :equals], do: 4
-  defp instruction_length_for(opcode) when opcode in [:read, :write], do: 2
+  defp instruction_length_for(opcode) when opcode in [:read, :write, :adj_relative_base], do: 2
   defp instruction_length_for(opcode) when opcode in [:jump_if_true, :jump_if_false], do: 3
   defp instruction_length_for(:halt), do: 1
 

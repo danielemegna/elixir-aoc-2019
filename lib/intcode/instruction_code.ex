@@ -27,6 +27,7 @@ defmodule Intcode.InstructionCode do
       6 -> :jump_if_false
       7 -> :less_than
       8 -> :equals
+      9 -> :adj_relative_base
       99 -> :halt
     end
   end
