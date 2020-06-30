@@ -131,6 +131,11 @@ defmodule Intcode.MachineTest do
     run_program_test([1,0,42,3,99], [1,0,42,1,99]) # (1 + 0 = 1)
   end
 
+  test "memory beyond the initial program is writable (and 0 is the default memory value)" do
+    run_program_test([1,0,0,5,99], [1,0,0,5,99,2]) # (1 + 1 = 2)
+    run_program_test([1,0,0,10,99], [1,0,0,10,99,0,0,0,0,0,2]) # (1 + 1 = 2)
+  end
+
   defp run_program_test(initial_memory, expected_final_memory) do
     run_program_test(initial_memory, [], expected_final_memory, [])
   end

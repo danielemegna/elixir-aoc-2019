@@ -23,7 +23,7 @@ defmodule Intcode.Machine do
   defp compute_instruction(%{code: %{opcode: :read}} = instruction, machine_state) do
     [next_input_value | inputs_rest ] = machine_state.inputs_stack
     first_parameter = Instruction.first_parameter_from(instruction, machine_state.memory)
-    new_memory = machine_state.memory |> List.replace_at(first_parameter, next_input_value)
+    new_memory = machine_state.memory |> write_at(first_parameter, next_input_value)
     %{machine_state | memory: new_memory, instruction_pointer: new_instruction_pointer(instruction), inputs_stack: inputs_rest}
   end
 
@@ -66,10 +66,19 @@ defmodule Intcode.Machine do
       :less_than -> (if (first_parameter < second_parameter), do: 1, else: 0)
       :equals -> (if (first_parameter == second_parameter), do: 1, else: 0)
     end
-    new_memory = machine_state.memory |> List.replace_at(third_parameter, instruction_result)
+    new_memory = machine_state.memory |> write_at(third_parameter, instruction_result)
     %{machine_state | memory: new_memory, instruction_pointer: new_instruction_pointer(instruction)}
   end
 
   defp new_instruction_pointer(instruction), do: instruction.memory_pointer + instruction.length
+
+  defp write_at(memory, address, value) do
+    actual_size = Enum.count(memory)
+    final_size = max(address+1, actual_size)
+    zero_extension_size = final_size - actual_size
+    memory
+      |> Kernel.++(List.duplicate(0, zero_extension_size))
+      |> List.replace_at(address, value)
+  end
 
 end
