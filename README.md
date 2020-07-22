@@ -30,3 +30,9 @@ To use temporary dev docker container
 $ docker run --rm -itv $PWD:/app -w /app elixir:alpine sh
 # mix test
 ```
+
+or just run tests
+
+```
+$ docker run --rm -itv $PWD:/app -w /app elixir:alpine mix test
+```
